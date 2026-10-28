@@ -3,6 +3,7 @@ package com.mz.commerce.common.authentication;
 import static com.mz.commerce.common.authentication.SessionConst.*;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.mz.commerce.common.exception.CustomException;
@@ -44,6 +45,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws
 		Exception {
+
+		// 컨트롤러 메서드를 사용하는 것이 아닐 경우 인증 실패로 처리되지 않고 URL Not Found 등으로 처리되게 수정
+		if (!(handler instanceof HandlerMethod))
+			return true;
 
 		HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute(SESSION_USER) == null) {
