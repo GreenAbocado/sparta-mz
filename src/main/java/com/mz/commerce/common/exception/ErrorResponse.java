@@ -1,4 +1,4 @@
-package com.mz.commerce.common;
+package com.mz.commerce.common.exception;
 
 import java.time.LocalDateTime;
 import java.util.List;
