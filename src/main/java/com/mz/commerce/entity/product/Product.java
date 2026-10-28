@@ -1,8 +1,9 @@
-package com.mz.commerce.entity;
+package com.mz.commerce.entity.product;
 
 import java.time.LocalDateTime;
 
-import com.mz.commerce.Enumerator.ProductStatus;
+import com.mz.commerce.Enumerator.product.ProductStatus;
+import com.mz.commerce.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "products")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Product {
+public class Product extends BaseEntity {
 	//registered_by -> admin_id
 
 	@Id

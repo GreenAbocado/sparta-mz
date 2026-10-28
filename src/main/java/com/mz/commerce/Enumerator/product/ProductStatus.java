@@ -1,4 +1,4 @@
-package com.mz.commerce.Enumerator;
+package com.mz.commerce.Enumerator.product;
 
 public enum ProductStatus {
 	ON_SALE,    // 판매 중
