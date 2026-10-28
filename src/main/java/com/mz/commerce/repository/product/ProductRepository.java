@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.mz.commerce.entity.product.Product;
-import com.mz.commerce.enumerator.product.ProductCategory;
-import com.mz.commerce.enumerator.product.ProductStatus;
+import com.mz.commerce.entity.product.ProductCategory;
+import com.mz.commerce.entity.product.ProductStatus;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 	@Query("""

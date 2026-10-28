@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mz.commerce.common.authentication.Login;
+import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.product.DeleteProductResponse;
 import com.mz.commerce.dto.product.ProductPageResponse;
 import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.RegisterProductRequest;
 import com.mz.commerce.dto.product.UpdateProductRequest;
+import com.mz.commerce.dto.product.UpdateProductStatusRequest;
 import com.mz.commerce.dto.product.UpdateProductStockRequest;
 import com.mz.commerce.service.product.ProductService;
 
@@ -34,10 +37,11 @@ public class ProductController {
 	//상품 등록
 	@PostMapping
 	public ResponseEntity<ProductResponse> registerProduct(
-		/* @SessionAttribute Long id*/
+		@Login SessionUser sessionUser,
 		@Valid @RequestBody RegisterProductRequest request
 	) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(productService.registerProduct(request));
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(productService.registerProduct(sessionUser.getId(), sessionUser.getRole(), request));
 	}
 
 	//상품 전체 조회
@@ -66,27 +70,43 @@ public class ProductController {
 	//상품 정보 수정 (상품명, 카테고리, 가격)
 	@PatchMapping("/{productId}")
 	public ResponseEntity<ProductResponse> updateProduct(
+		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
 		@Valid @RequestBody UpdateProductRequest request
 	) {
-		return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(productId, request));
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(productService.updateProduct(sessionUser.getRole(), productId, request));
 	}
 
 	//상품 재고 변경
 	@PatchMapping("/{productId}/stock")
 	public ResponseEntity<ProductResponse> updateProductStock(
+		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
 		@Valid @RequestBody UpdateProductStockRequest request
 	) {
-		return ResponseEntity.status(HttpStatus.OK).body(productService.updateProductStock(productId, request));
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(productService.updateProductStock(sessionUser.getRole(), productId, request));
+	}
+
+	//상품 상태 변경
+	@PatchMapping("/{productId}/status")
+	public ResponseEntity<ProductResponse> updateProductStatus(
+		@Login SessionUser sessionUser,
+		@PathVariable Long productId,
+		@Valid @RequestBody UpdateProductStatusRequest request
+	) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(productService.updateProductStatus(sessionUser.getRole(), productId, request));
 	}
 
 	// 상품 삭제
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<DeleteProductResponse> deleteProduct(
+		@Login SessionUser sessionUser,
 		@PathVariable Long productId
 	) {
-		DeleteProductResponse response = productService.deleteProduct(productId);
+		DeleteProductResponse response = productService.deleteProduct(sessionUser.getRole(), productId);
 		return ResponseEntity.ok(response);
 	}
 }

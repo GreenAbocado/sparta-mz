@@ -23,5 +23,6 @@ public class RegisterProductRequest {
 	@PositiveOrZero(message = "재고 수량은 0 이상이어야 합니다.")
 	private int stock;
 
-	private boolean setAsDiscontinued;
+	@NotNull(message = "판매 단종 여부를 입력해주세요. (true, false)")
+	private Boolean setAsDiscontinued;
 }

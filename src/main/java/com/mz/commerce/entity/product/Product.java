@@ -3,14 +3,16 @@ package com.mz.commerce.entity.product;
 import java.time.LocalDateTime;
 
 import com.mz.commerce.entity.BaseEntity;
-import com.mz.commerce.enumerator.product.ProductCategory;
-import com.mz.commerce.enumerator.product.ProductStatus;
+import com.mz.commerce.entity.admin.Admin;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,7 +23,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "products")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product extends BaseEntity {
-	//registered_by -> admin_id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "registered_by")
+	private Admin registeredBy;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +54,8 @@ public class Product extends BaseEntity {
 		this.deleted = LocalDateTime.now();
 	}
 
-	public Product(String name, ProductCategory category, Long price, int stock, ProductStatus status) {
+	public Product(Admin admin, String name, ProductCategory category, Long price, int stock, ProductStatus status) {
+		this.registeredBy = admin;
 		this.name = name;
 		this.category = category;
 		this.price = price;

@@ -10,28 +10,44 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mz.commerce.common.CustomException;
-import com.mz.commerce.common.ErrorCode;
+import com.mz.commerce.common.exception.CustomException;
+import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.dto.product.DeleteProductResponse;
 import com.mz.commerce.dto.product.ProductPageResponse;
 import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.RegisterProductRequest;
+import com.mz.commerce.dto.product.RegisteredByResponse;
 import com.mz.commerce.dto.product.UpdateProductRequest;
+import com.mz.commerce.dto.product.UpdateProductStatusRequest;
 import com.mz.commerce.dto.product.UpdateProductStockRequest;
+import com.mz.commerce.entity.admin.Admin;
+import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.product.Product;
-import com.mz.commerce.enumerator.product.ProductCategory;
-import com.mz.commerce.enumerator.product.ProductStatus;
+import com.mz.commerce.entity.product.ProductCategory;
+import com.mz.commerce.entity.product.ProductStatus;
+import com.mz.commerce.repository.admin.AdminRepository;
 import com.mz.commerce.repository.product.ProductRepository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 	private final ProductRepository productRepository;
+	private final AdminRepository adminRepository;
 
 	@Transactional
-	public ProductResponse registerProduct(RegisterProductRequest request) {
+	public ProductResponse registerProduct(Long adminId, AdminRole adminRole, RegisterProductRequest request) {
+		//관리자 검증
+		Admin admin = adminRepository.findById(adminId)
+			.orElseThrow(() -> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
+
+		//슈퍼 관리자, 운영 관리자 -> 상품 등록 가능.  CS 관리자 -> 불가능?
+		if (adminRole == AdminRole.CS) {
+			throw new CustomException(ErrorCode.PRODUCT_ACCESS_DENIED);
+		}
+
 		//category + status 검증
 		ProductCategory productCategory;
 		try {
@@ -42,7 +58,7 @@ public class ProductService {
 
 		//판매중과 품절은 현재 재고 기준으로 자동 결정
 		ProductStatus productStatus;
-		if (request.isSetAsDiscontinued()) {
+		if (request.getSetAsDiscontinued()) {
 			productStatus = ProductStatus.DISCONTINUED;
 		} else if (request.getStock() <= 0) {
 			productStatus = ProductStatus.SOLD_OUT;
@@ -50,11 +66,11 @@ public class ProductService {
 			productStatus = ProductStatus.ON_SALE;
 		}
 
-		Product product = new Product(request.getName(), productCategory, request.getPrice(), request.getStock(),
+		Product product = new Product(admin, request.getName(), productCategory, request.getPrice(), request.getStock(),
 			productStatus);
 		Product savedProduct = productRepository.save(product);
 
-		//RegisteredByResponse registeredBy = new RegisteredByResponse()
+		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
 
 		return new ProductResponse(
 			savedProduct.getId(),
@@ -63,9 +79,9 @@ public class ProductService {
 			savedProduct.getPrice(),
 			savedProduct.getStock(),
 			savedProduct.getStatus(),
-			//registeredBy,
 			savedProduct.getCreatedAt(),
-			savedProduct.getModifiedAt()
+			savedProduct.getModifiedAt(),
+			registeredBy
 		);
 	}
 
@@ -132,6 +148,10 @@ public class ProductService {
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
+		//등록한 관리자 불러오기
+		Admin admin = product.getRegisteredBy();
+		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
+
 		return new ProductResponse(
 			product.getId(),
 			product.getName(),
@@ -140,12 +160,20 @@ public class ProductService {
 			product.getStock(),
 			product.getStatus(),
 			product.getCreatedAt(),
-			product.getModifiedAt()
+			product.getModifiedAt(),
+			registeredBy
 		);
 	}
 
 	@Transactional
-	public ProductResponse updateProduct(Long productId, UpdateProductRequest request) {
+	public ProductResponse updateProduct(AdminRole adminRole, Long productId,
+		UpdateProductRequest request) {
+		//슈퍼 관리자, 운영 관리자 -> 상품 수정 가능.  CS 관리자 -> 불가능?
+		if (adminRole == AdminRole.CS) {
+			throw new CustomException(ErrorCode.PRODUCT_ACCESS_DENIED);
+		}
+
+		//상품 검증
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
@@ -159,6 +187,10 @@ public class ProductService {
 
 		product.update(request.getName(), productCategory, request.getPrice());
 
+		//등록한 관리자 불러오기
+		Admin admin = product.getRegisteredBy();
+		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
+
 		return new ProductResponse(
 			product.getId(),
 			product.getName(),
@@ -167,12 +199,19 @@ public class ProductService {
 			product.getStock(),
 			product.getStatus(),
 			product.getCreatedAt(),
-			product.getModifiedAt()
+			product.getModifiedAt(),
+			registeredBy
 		);
 	}
 
 	@Transactional
-	public ProductResponse updateProductStock(Long productId, UpdateProductStockRequest request) {
+	public ProductResponse updateProductStock(AdminRole adminRole, Long productId, UpdateProductStockRequest request) {
+		//슈퍼 관리자, 운영 관리자 -> 상품 수정 가능.  CS 관리자 -> 불가능?
+		if (adminRole == AdminRole.CS) {
+			throw new CustomException(ErrorCode.PRODUCT_ACCESS_DENIED);
+		}
+
+		//상품 검증
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
@@ -182,6 +221,10 @@ public class ProductService {
 			product.updateStatus(product.getStock() <= 0 ? ProductStatus.SOLD_OUT : ProductStatus.ON_SALE);
 		}
 
+		//등록한 관리자 불러오기
+		Admin admin = product.getRegisteredBy();
+		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
+
 		return new ProductResponse(
 			product.getId(),
 			product.getName(),
@@ -190,12 +233,60 @@ public class ProductService {
 			product.getStock(),
 			product.getStatus(),
 			product.getCreatedAt(),
-			product.getModifiedAt()
+			product.getModifiedAt(),
+			registeredBy
 		);
 	}
 
 	@Transactional
-	public DeleteProductResponse deleteProduct(Long productId) {
+	public ProductResponse updateProductStatus(AdminRole adminRole, Long productId,
+		@Valid UpdateProductStatusRequest request) {
+		//슈퍼 관리자, 운영 관리자 -> 상품 수정 가능.  CS 관리자 -> 불가능?
+		if (adminRole == AdminRole.CS) {
+			throw new CustomException(ErrorCode.PRODUCT_ACCESS_DENIED);
+		}
+
+		//상품 검증
+		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
+			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+		//상품 상태 변경
+		ProductStatus productStatus;
+		if (request.getSetAsDiscontinued()) {
+			productStatus = ProductStatus.DISCONTINUED;
+		} else if (product.getStock() <= 0) {
+			productStatus = ProductStatus.SOLD_OUT;
+		} else {
+			productStatus = ProductStatus.ON_SALE;
+		}
+
+		product.updateStatus(productStatus);
+
+		//등록한 관리자 불러오기
+		Admin admin = product.getRegisteredBy();
+		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
+
+		return new ProductResponse(
+			product.getId(),
+			product.getName(),
+			product.getCategory(),
+			product.getPrice(),
+			product.getStock(),
+			product.getStatus(),
+			product.getCreatedAt(),
+			product.getModifiedAt(),
+			registeredBy
+		);
+	}
+
+	@Transactional
+	public DeleteProductResponse deleteProduct(AdminRole adminRole, Long productId) {
+		//슈퍼 관리자, 운영 관리자 -> 상품 삭제 가능.  CS 관리자 -> 불가능?
+		if (adminRole == AdminRole.CS) {
+			throw new CustomException(ErrorCode.PRODUCT_ACCESS_DENIED);
+		}
+
+		//상품 검증
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
