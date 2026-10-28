@@ -56,8 +56,8 @@ public class Admin extends BaseEntity {
 	@Column(name = "rejection_reason", length = 255)
 	private String rejectionReason;
 
-	@Column(nullable = false)
-	private Boolean deleted;
+	@Column(name = "deleted")
+	private LocalDateTime deleted;
 
 	public Admin(String name, String email, String password, String phone, AdminStatus status,
 		AdminRole role) {
@@ -67,6 +67,5 @@ public class Admin extends BaseEntity {
 		this.phone = phone;
 		this.status = status != null ? status : AdminStatus.PENDING;
 		this.role = role != null ? role : AdminRole.OPERATION;
-		this.deleted = false;
 	}
 }
