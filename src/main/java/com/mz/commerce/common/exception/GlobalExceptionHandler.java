@@ -1,6 +1,6 @@
-package com.mz.commerce.common;
+package com.mz.commerce.common.exception;
 
-import static com.mz.commerce.common.ErrorCode.*;
+import static com.mz.commerce.common.exception.ErrorCode.*;
 
 import java.util.List;
 

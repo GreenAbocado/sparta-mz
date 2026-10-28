@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mz.commerce.config.SessionUser;
+import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.admin.AdminLoginRequest;
 import com.mz.commerce.dto.admin.AdminLoginResponse;
 import com.mz.commerce.dto.admin.AdminRegisterRequest;
