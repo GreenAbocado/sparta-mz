@@ -3,6 +3,7 @@ package com.mz.commerce.controller.product;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mz.commerce.dto.product.ProductPageResponse;
 import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.RegisterProductRequest;
+import com.mz.commerce.dto.product.UpdateProductRequest;
 import com.mz.commerce.service.product.ProductService;
 
 import jakarta.validation.Valid;
@@ -56,5 +58,14 @@ public class ProductController {
 		@PathVariable Long productId
 	) {
 		return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(productId));
+	}
+
+	//상품 정보 수정 (상품명, 카테고리, 가격)
+	@PatchMapping("/{productId}")
+	public ResponseEntity<ProductResponse> updateProduct(
+		@PathVariable Long productId,
+		@Valid @RequestBody UpdateProductRequest request
+	) {
+		return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(productId, request));
 	}
 }

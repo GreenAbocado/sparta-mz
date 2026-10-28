@@ -15,6 +15,7 @@ import com.mz.commerce.common.ErrorCode;
 import com.mz.commerce.dto.product.ProductPageResponse;
 import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.RegisterProductRequest;
+import com.mz.commerce.dto.product.UpdateProductRequest;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.enumerator.product.ProductCategory;
 import com.mz.commerce.enumerator.product.ProductStatus;
@@ -125,6 +126,33 @@ public class ProductService {
 	public ProductResponse getProduct(Long productId) {
 		Product product = productRepository.findById(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+		return new ProductResponse(
+			product.getId(),
+			product.getName(),
+			product.getCategory(),
+			product.getPrice(),
+			product.getStock(),
+			product.getStatus(),
+			product.getCreatedAt(),
+			product.getModifiedAt()
+		);
+	}
+
+	@Transactional
+	public ProductResponse updateProduct(Long productId, UpdateProductRequest request) {
+		Product product = productRepository.findById(productId).orElseThrow(
+			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+		//category 검증
+		ProductCategory productCategory;
+		try {
+			productCategory = ProductCategory.valueOf(request.getCategory());
+		} catch (IllegalArgumentException e) {
+			throw new CustomException(ErrorCode.PRODUCT_CATEGORY_INVALID);
+		}
+
+		product.update(request.getName(), productCategory, request.getPrice());
 
 		return new ProductResponse(
 			product.getId(),
