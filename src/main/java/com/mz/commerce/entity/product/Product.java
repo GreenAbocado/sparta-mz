@@ -37,7 +37,7 @@ public class Product extends BaseEntity {
 	private Long price;
 
 	@Column(nullable = false)
-	private Long stock;
+	private int stock;
 
 	@Column(nullable = false)
 	private ProductStatus status;
@@ -50,7 +50,7 @@ public class Product extends BaseEntity {
 		this.deleted = LocalDateTime.now();
 	}
 
-	public Product(String name, ProductCategory category, Long price, Long stock, ProductStatus status) {
+	public Product(String name, ProductCategory category, Long price, int stock, ProductStatus status) {
 		this.name = name;
 		this.category = category;
 		this.price = price;
@@ -64,4 +64,11 @@ public class Product extends BaseEntity {
 		this.price = price;
 	}
 
+	public void updateStock(int stock) {
+		this.stock = stock;
+	}
+
+	public void updateStatus(ProductStatus status) {
+		this.status = status;
+	}
 }

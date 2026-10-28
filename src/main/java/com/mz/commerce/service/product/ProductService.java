@@ -16,6 +16,7 @@ import com.mz.commerce.dto.product.ProductPageResponse;
 import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.RegisterProductRequest;
 import com.mz.commerce.dto.product.UpdateProductRequest;
+import com.mz.commerce.dto.product.UpdateProductStockRequest;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.enumerator.product.ProductCategory;
 import com.mz.commerce.enumerator.product.ProductStatus;
@@ -37,16 +38,19 @@ public class ProductService {
 		} catch (IllegalArgumentException e) {
 			throw new CustomException(ErrorCode.PRODUCT_CATEGORY_INVALID);
 		}
+
+		//판매중과 품절은 현재 재고 기준으로 자동 결정
 		ProductStatus productStatus;
-		try {
-			productStatus = ProductStatus.valueOf(request.getStatus());
-		} catch (IllegalArgumentException e) {
-			throw new CustomException(ErrorCode.PRODUCT_STATUS_INVALID);
+		if (request.isSetAsDiscontinued()) {
+			productStatus = ProductStatus.DISCONTINUED;
+		} else if (request.getStock() <= 0) {
+			productStatus = ProductStatus.SOLD_OUT;
+		} else {
+			productStatus = ProductStatus.ON_SALE;
 		}
 
 		Product product = new Product(request.getName(), productCategory, request.getPrice(), request.getStock(),
 			productStatus);
-
 		Product savedProduct = productRepository.save(product);
 
 		//RegisteredByResponse registeredBy = new RegisteredByResponse()
@@ -153,6 +157,29 @@ public class ProductService {
 		}
 
 		product.update(request.getName(), productCategory, request.getPrice());
+
+		return new ProductResponse(
+			product.getId(),
+			product.getName(),
+			product.getCategory(),
+			product.getPrice(),
+			product.getStock(),
+			product.getStatus(),
+			product.getCreatedAt(),
+			product.getModifiedAt()
+		);
+	}
+
+	@Transactional
+	public ProductResponse updateProductStock(Long productId, UpdateProductStockRequest request) {
+		Product product = productRepository.findById(productId).orElseThrow(
+			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+		//재고가 0 이하이면 품절, 1 이상이면 판매중으로 전환, 단종 상태는 무시
+		product.updateStock(request.getStock());
+		if (product.getStatus() != ProductStatus.DISCONTINUED) {
+			product.updateStatus(product.getStock() <= 0 ? ProductStatus.SOLD_OUT : ProductStatus.ON_SALE);
+		}
 
 		return new ProductResponse(
 			product.getId(),

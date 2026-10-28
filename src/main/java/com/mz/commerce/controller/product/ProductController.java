@@ -15,6 +15,7 @@ import com.mz.commerce.dto.product.ProductPageResponse;
 import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.RegisterProductRequest;
 import com.mz.commerce.dto.product.UpdateProductRequest;
+import com.mz.commerce.dto.product.UpdateProductStockRequest;
 import com.mz.commerce.service.product.ProductService;
 
 import jakarta.validation.Valid;
@@ -67,5 +68,14 @@ public class ProductController {
 		@Valid @RequestBody UpdateProductRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(productId, request));
+	}
+
+	//상품 재고 변경
+	@PatchMapping("/{productId}/stock")
+	public ResponseEntity<ProductResponse> updateProductStock(
+		@PathVariable Long productId,
+		@Valid @RequestBody UpdateProductStockRequest request
+	) {
+		return ResponseEntity.status(HttpStatus.OK).body(productService.updateProductStock(productId, request));
 	}
 }

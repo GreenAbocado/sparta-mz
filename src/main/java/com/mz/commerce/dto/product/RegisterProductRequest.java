@@ -21,8 +21,7 @@ public class RegisterProductRequest {
 
 	@NotNull(message = "재고 수량은 필수입니다.")
 	@PositiveOrZero(message = "재고 수량은 0 이상이어야 합니다.")
-	private Long stock;
+	private int stock;
 
-	@NotBlank(message = "상품 상태는 필수입니다.")
-	private String status;
+	private boolean setAsDiscontinued;
 }

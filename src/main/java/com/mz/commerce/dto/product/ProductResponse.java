@@ -27,7 +27,7 @@ public class ProductResponse {
 	private final String name;
 	private final ProductCategory category;
 	private final Long price;
-	private final Long stock;
+	private final int stock;
 	private final ProductStatus status;
 	//private final RegisteredByResponse registeredBy;
 
