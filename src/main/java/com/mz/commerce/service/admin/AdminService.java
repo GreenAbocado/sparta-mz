@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminService {
 	private final AdminRepository adminRepository;
 
-	//관리자 회원가입 서비스 로직
+	// 관리자 회원가입 서비스 로직
 	@Transactional
 	public AdminRegisterResponse registerAdmin(AdminRegisterRequest request) {
 		if (adminRepository.existsByEmail(request.getEmail())) {
@@ -55,6 +55,4 @@ public class AdminService {
 		session.setAttribute("LOGIN_ADMIN", sessionUser);
 		return sessionUser;
 	}
-
-
 }
