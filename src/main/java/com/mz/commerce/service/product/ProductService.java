@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mz.commerce.common.CustomException;
 import com.mz.commerce.common.ErrorCode;
+import com.mz.commerce.dto.product.DeleteProductResponse;
 import com.mz.commerce.dto.product.ProductPageResponse;
 import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.RegisterProductRequest;
@@ -128,7 +129,7 @@ public class ProductService {
 
 	@Transactional(readOnly = true)
 	public ProductResponse getProduct(Long productId) {
-		Product product = productRepository.findById(productId).orElseThrow(
+		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
 		return new ProductResponse(
@@ -145,7 +146,7 @@ public class ProductService {
 
 	@Transactional
 	public ProductResponse updateProduct(Long productId, UpdateProductRequest request) {
-		Product product = productRepository.findById(productId).orElseThrow(
+		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
 		//category 검증
@@ -172,7 +173,7 @@ public class ProductService {
 
 	@Transactional
 	public ProductResponse updateProductStock(Long productId, UpdateProductStockRequest request) {
-		Product product = productRepository.findById(productId).orElseThrow(
+		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
 		//재고가 0 이하이면 품절, 1 이상이면 판매중으로 전환, 단종 상태는 무시
@@ -191,5 +192,18 @@ public class ProductService {
 			product.getCreatedAt(),
 			product.getModifiedAt()
 		);
+	}
+
+	@Transactional
+	public DeleteProductResponse deleteProduct(Long productId) {
+		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
+			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+		//해당 주문도 soft delete  orderRespository.findByProductId
+
+		//상품 삭제
+		product.softDelete();
+
+		return new DeleteProductResponse(product.getId(), product.getName(), product.getDeleted());
 	}
 }

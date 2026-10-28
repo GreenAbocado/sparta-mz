@@ -2,6 +2,7 @@ package com.mz.commerce.controller.product;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mz.commerce.dto.product.DeleteProductResponse;
 import com.mz.commerce.dto.product.ProductPageResponse;
 import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.RegisterProductRequest;
@@ -77,5 +79,14 @@ public class ProductController {
 		@Valid @RequestBody UpdateProductStockRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK).body(productService.updateProductStock(productId, request));
+	}
+
+	// 상품 삭제
+	@DeleteMapping("/{productId}")
+	public ResponseEntity<DeleteProductResponse> deleteProduct(
+		@PathVariable Long productId
+	) {
+		DeleteProductResponse response = productService.deleteProduct(productId);
+		return ResponseEntity.ok(response);
 	}
 }
