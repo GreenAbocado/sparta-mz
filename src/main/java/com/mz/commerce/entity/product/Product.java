@@ -2,6 +2,7 @@ package com.mz.commerce.entity.product;
 
 import java.time.LocalDateTime;
 
+import com.mz.commerce.Enumerator.product.ProductCategory;
 import com.mz.commerce.Enumerator.product.ProductStatus;
 import com.mz.commerce.entity.BaseEntity;
 
@@ -30,7 +31,7 @@ public class Product extends BaseEntity {
 	private String name;
 
 	@Column(nullable = false, length = 50)
-	private String category;
+	private ProductCategory category;
 
 	@Column(nullable = false)
 	private Long price;
@@ -49,7 +50,7 @@ public class Product extends BaseEntity {
 		this.deleted = LocalDateTime.now();
 	}
 
-	public Product(String name, String category, Long price, Long stock, ProductStatus status) {
+	public Product(String name, ProductCategory category, Long price, Long stock, ProductStatus status) {
 		this.name = name;
 		this.category = category;
 		this.price = price;

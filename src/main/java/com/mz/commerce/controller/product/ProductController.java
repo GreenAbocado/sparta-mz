@@ -11,6 +11,7 @@ import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.RegisterProductRequest;
 import com.mz.commerce.service.product.ProductService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -23,7 +24,7 @@ public class ProductController {
 	@PostMapping
 	public ResponseEntity<ProductResponse> registerProduct(
 		/* @SessionAttribute Long id*/
-		/* Valid 추가 */ @RequestBody RegisterProductRequest request
+		@Valid @RequestBody RegisterProductRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(productService.registerProduct(request));
 	}

@@ -3,6 +3,7 @@ package com.mz.commerce.dto.product;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.mz.commerce.Enumerator.product.ProductCategory;
 import com.mz.commerce.Enumerator.product.ProductStatus;
 import com.mz.commerce.entity.product.Product;
 
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductResponse {
 	private final Long id;
 	private final String name;
-	private final String category;
+	private final ProductCategory category;
 	private final Long price;
 	private final Long stock;
 	private final ProductStatus status;

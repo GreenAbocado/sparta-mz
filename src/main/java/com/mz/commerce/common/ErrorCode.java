@@ -31,6 +31,10 @@ public enum ErrorCode {
 	// 회원
 
 	// 상품
+	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
+		"상품 카테고리가 올바르지 않습니다. (사용 가능한 카테고리: ELECTRONICS, CLOTHING, FOOD)"),
+	PRODUCT_STATUS_INVALID(HttpStatus.BAD_REQUEST, "P002",
+		"상품 상태가 올바르지 않습니다. (사용 가능한 상태: ON_SALE, SOLD_OUT, DISCONTINUED)");
 
 	// 주문
 	;
