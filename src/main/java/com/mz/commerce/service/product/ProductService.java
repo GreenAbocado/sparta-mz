@@ -63,6 +63,7 @@ public class ProductService {
 		);
 	}
 
+	@Transactional(readOnly = true)
 	public ProductPageResponse getAllProducts(String keyword, int page, int size, String sortBy, String sortOrder,
 		String category, String status) {
 
@@ -118,5 +119,22 @@ public class ProductService {
 
 		return new ProductPageResponse(responsePage);
 
+	}
+
+	@Transactional(readOnly = true)
+	public ProductResponse getProduct(Long productId) {
+		Product product = productRepository.findById(productId).orElseThrow(
+			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
+		return new ProductResponse(
+			product.getId(),
+			product.getName(),
+			product.getCategory(),
+			product.getPrice(),
+			product.getStock(),
+			product.getStatus(),
+			product.getCreatedAt(),
+			product.getModifiedAt()
+		);
 	}
 }

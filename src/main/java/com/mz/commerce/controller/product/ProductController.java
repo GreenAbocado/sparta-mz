@@ -3,6 +3,7 @@ package com.mz.commerce.controller.product;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ public class ProductController {
 
 	private final ProductService productService;
 
+	//상품 등록
 	@PostMapping
 	public ResponseEntity<ProductResponse> registerProduct(
 		/* @SessionAttribute Long id*/
@@ -33,6 +35,7 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(productService.registerProduct(request));
 	}
 
+	//상품 전체 조회
 	@GetMapping
 	public ResponseEntity<ProductPageResponse> getProducts(
 		@RequestParam(required = false) String keyword,
@@ -45,5 +48,13 @@ public class ProductController {
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(productService.getAllProducts(keyword, page, size, sortBy, sortOrder, category, status));
+	}
+
+	//상품 단 건 조회
+	@GetMapping("/{productId}")
+	public ResponseEntity<ProductResponse> getProduct(
+		@PathVariable Long productId
+	) {
+		return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(productId));
 	}
 }

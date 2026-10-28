@@ -37,6 +37,7 @@ public enum ErrorCode {
 		"상품 상태가 올바르지 않습니다. (사용 가능한 상태: ON_SALE, SOLD_OUT, DISCONTINUED)"),
 	PRODUCT_SORT_ORDER_INVALID(HttpStatus.BAD_REQUEST, "P003", "정렬 순서는 asc 또는 desc만 가능합니다."),
 	PRODUCT_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "P004", "지원하지 않는 정렬 기준입니다. (price, stock, createdAt)"),
+	PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "P005", "해당 ID의 상품을 찾을 수 없습니다.");
 
 	// 주문
 	;
