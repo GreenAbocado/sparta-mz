@@ -2,9 +2,9 @@ package com.mz.commerce.entity.product;
 
 import java.time.LocalDateTime;
 
-import com.mz.commerce.Enumerator.product.ProductCategory;
-import com.mz.commerce.Enumerator.product.ProductStatus;
 import com.mz.commerce.entity.BaseEntity;
+import com.mz.commerce.enumerator.product.ProductCategory;
+import com.mz.commerce.enumerator.product.ProductStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

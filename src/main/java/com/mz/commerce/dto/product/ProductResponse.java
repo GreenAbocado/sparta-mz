@@ -3,9 +3,9 @@ package com.mz.commerce.dto.product;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.mz.commerce.Enumerator.product.ProductCategory;
-import com.mz.commerce.Enumerator.product.ProductStatus;
 import com.mz.commerce.entity.product.Product;
+import com.mz.commerce.enumerator.product.ProductCategory;
+import com.mz.commerce.enumerator.product.ProductStatus;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

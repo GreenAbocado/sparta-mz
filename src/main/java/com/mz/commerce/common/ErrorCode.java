@@ -34,7 +34,9 @@ public enum ErrorCode {
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
 		"상품 카테고리가 올바르지 않습니다. (사용 가능한 카테고리: ELECTRONICS, CLOTHING, FOOD)"),
 	PRODUCT_STATUS_INVALID(HttpStatus.BAD_REQUEST, "P002",
-		"상품 상태가 올바르지 않습니다. (사용 가능한 상태: ON_SALE, SOLD_OUT, DISCONTINUED)");
+		"상품 상태가 올바르지 않습니다. (사용 가능한 상태: ON_SALE, SOLD_OUT, DISCONTINUED)"),
+	PRODUCT_SORT_ORDER_INVALID(HttpStatus.BAD_REQUEST, "P003", "정렬 순서는 asc 또는 desc만 가능합니다."),
+	PRODUCT_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "P004", "지원하지 않는 정렬 기준입니다. (price, stock, createdAt)"),
 
 	// 주문
 	;

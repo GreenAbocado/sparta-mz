@@ -1,4 +1,4 @@
-package com.mz.commerce.Enumerator.product;
+package com.mz.commerce.enumerator.product;
 
 public enum ProductCategory {
 	ELECTRONICS,
