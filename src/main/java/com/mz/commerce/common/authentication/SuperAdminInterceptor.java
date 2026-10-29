@@ -4,6 +4,8 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.mz.commerce.common.exception.CustomException;
+import com.mz.commerce.common.exception.ErrorCode;
+import com.mz.commerce.entity.admin.AdminRole;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,10 +48,9 @@ public class SuperAdminInterceptor implements HandlerInterceptor {
 		}
 
 		// lowerRole: 애너테이션으로 정의한 최소 권한. role: 실제 세션에 저장된 권한
-		AdminRole lowerRole = admin.role();
+		AdminRole lowerRole = admin.value();
 		AdminRole role = ((SessionUser)request.getSession(false)
 			.getAttribute(SessionConst.SESSION_USER)).getRole();
-		return true;
 		if (authorizedCheck(lowerRole, role)) {
 			return true;
 		}
@@ -61,3 +62,7 @@ public class SuperAdminInterceptor implements HandlerInterceptor {
 		if (role == AdminRole.SUPER) {
 			return true;
 		}
+
+		return role == lowerRole;
+	}
+}
