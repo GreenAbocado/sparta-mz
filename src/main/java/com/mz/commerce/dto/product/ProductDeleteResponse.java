@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class DeleteProductResponse {
+public class ProductDeleteResponse {
 	private final Long productId;
 	private final String name;
 	private final LocalDateTime deleted;

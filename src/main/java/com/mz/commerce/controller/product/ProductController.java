@@ -16,12 +16,12 @@ import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.common.authentication.Login;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.common.PageResponse;
-import com.mz.commerce.dto.product.DeleteProductResponse;
+import com.mz.commerce.dto.product.ProductDeleteResponse;
+import com.mz.commerce.dto.product.ProductRegisterRequest;
 import com.mz.commerce.dto.product.ProductResponse;
-import com.mz.commerce.dto.product.RegisterProductRequest;
-import com.mz.commerce.dto.product.UpdateProductRequest;
-import com.mz.commerce.dto.product.UpdateProductStatusRequest;
-import com.mz.commerce.dto.product.UpdateProductStockRequest;
+import com.mz.commerce.dto.product.ProductUpdateRequest;
+import com.mz.commerce.dto.product.ProductUpdateStatusRequest;
+import com.mz.commerce.dto.product.ProductUpdateStockRequest;
 import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.service.product.ProductService;
 
@@ -41,7 +41,7 @@ public class ProductController {
 	@PostMapping
 	public ResponseEntity<ProductResponse> registerProduct(
 		@Login SessionUser sessionUser,
-		@Valid @RequestBody RegisterProductRequest request
+		@Valid @RequestBody ProductRegisterRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(productService.registerProduct(sessionUser.getId(), request));
@@ -53,8 +53,8 @@ public class ProductController {
 		@RequestParam(required = false) String keyword,
 		@Valid @RequestParam(defaultValue = "1") @Min(1) int page,
 		@Valid @RequestParam(defaultValue = "10") @Min(1) int size,
-		@RequestParam(defaultValue = "price") String sortBy,
-		@RequestParam(defaultValue = "desc") String sortOrder,
+		@RequestParam(defaultValue = "id") String sortBy,
+		@RequestParam(defaultValue = "asc") String sortOrder,
 		@RequestParam(required = false) String category,
 		@RequestParam(required = false) String status
 	) {
@@ -76,7 +76,7 @@ public class ProductController {
 	public ResponseEntity<ProductResponse> updateProduct(
 		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
-		@Valid @RequestBody UpdateProductRequest request
+		@Valid @RequestBody ProductUpdateRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(productService.updateProduct(productId, request));
@@ -88,7 +88,7 @@ public class ProductController {
 	public ResponseEntity<ProductResponse> updateProductStock(
 		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
-		@Valid @RequestBody UpdateProductStockRequest request
+		@Valid @RequestBody ProductUpdateStockRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(productService.updateProductStock(productId, request));
@@ -100,7 +100,7 @@ public class ProductController {
 	public ResponseEntity<ProductResponse> updateProductStatus(
 		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
-		@Valid @RequestBody UpdateProductStatusRequest request
+		@Valid @RequestBody ProductUpdateStatusRequest request
 	) {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(productService.updateProductStatus(productId, request));
@@ -109,11 +109,11 @@ public class ProductController {
 	// 상품 삭제 (OP 관리자 이상)
 	@HigherAdmin(AdminRole.OPERATION)
 	@DeleteMapping("/{productId}")
-	public ResponseEntity<DeleteProductResponse> deleteProduct(
+	public ResponseEntity<ProductDeleteResponse> deleteProduct(
 		@Login SessionUser sessionUser,
 		@PathVariable Long productId
 	) {
-		DeleteProductResponse response = productService.deleteProduct(productId);
+		ProductDeleteResponse response = productService.deleteProduct(productId);
 		return ResponseEntity.ok(response);
 	}
 }
