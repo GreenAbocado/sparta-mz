@@ -34,7 +34,7 @@ public enum ErrorCode {
 	// 회원
 	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
 	EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "존재하지 않는 이메일입니다."),
-	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "A003", "비밀번호가 일치하지 않습니다."),
+	INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "A003", "이메일 또는 비밀번호가 일치하지 않습니다."),
 	ADMIN_NOT_ACTIVE(HttpStatus.FORBIDDEN, "A004", "관리자가 '활성' 상태가 아닙니다."),
 	ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "A005", "해당 ID의 관리자를 찾을 수 없습니다."),
 	REJECTION_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "A006", "반려 시에는 사유가 필수입니다."),
@@ -42,6 +42,13 @@ public enum ErrorCode {
 	ADMIN_ALREADY_REJECTED(HttpStatus.CONFLICT, "A008", "이미 거부된 관리자입니다."),
 	ADMIN_APPROVAL_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A009", "현재 상태에서는 가입 승인이 불가능합니다."),
 	ADMIN_REJECTION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A010", "현재 상태에서는 가입 거부가 불가능합니다."),
+	WEAK_PASSWORD(HttpStatus.BAD_REQUEST, "A011", "비밀번호는 최소 8자 이상 입력해야 합니다."),
+	INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "A012", "비밀번호가 일치하지 않습니다"),
+	ADMIN_INACTIVE(HttpStatus.FORBIDDEN, "A013", "관리자가 '비활성' 상태입니다."),
+	ADMIN_REJECTED(HttpStatus.FORBIDDEN, "A014", "관리자가 '거부' 상태입니다."),
+	ADMIN_PENDING(HttpStatus.FORBIDDEN, "A015", "관리자가 '승인 대기' 상태입니다."),
+	ADMIN_SUSPENDED(HttpStatus.FORBIDDEN, "A016", "관리자가 '정지' 상태입니다."),
+	WRONG_ACCESS(HttpStatus.BAD_REQUEST, "A017", "잘못된 접근입니다"),
 	// 상품
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
 		"상품 카테고리가 올바르지 않습니다. (사용 가능한 카테고리: ELECTRONICS, CLOTHING, FOOD)"),
