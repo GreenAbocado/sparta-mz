@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mz.commerce.common.exception.CustomException;
+import com.mz.commerce.dto.order.OrderCancelRequest;
 import com.mz.commerce.dto.order.OrderCreateRequest;
-import com.mz.commerce.dto.order.OrderDeleteRequest;
 import com.mz.commerce.dto.order.OrderResponse;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.order.Order;
@@ -64,7 +64,7 @@ public class OrderService {
 	}
 
 	@Transactional
-	public OrderResponse cancel(OrderDeleteRequest request, Long orderId) {
+	public OrderResponse cancel(OrderCancelRequest request, Long orderId) {
 		Order order = getOrderById(orderId);
 		order.cancel(request.getCancelReason());
 		return new OrderResponse(order);
