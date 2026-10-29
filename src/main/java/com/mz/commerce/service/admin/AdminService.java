@@ -3,6 +3,7 @@ package com.mz.commerce.service.admin;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mz.commerce.common.authentication.SessionConst;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.common.exception.ErrorCode;
@@ -52,7 +53,7 @@ public class AdminService {
 			throw new CustomException(ErrorCode.ADMIN_NOT_ACTIVE);
 		}
 		SessionUser sessionUser = new SessionUser(admin.getId(), admin.getRole());
-		session.setAttribute("LOGIN_ADMIN", sessionUser);
+		session.setAttribute(SessionConst.SESSION_USER, sessionUser);
 		return sessionUser;
 	}
 }
