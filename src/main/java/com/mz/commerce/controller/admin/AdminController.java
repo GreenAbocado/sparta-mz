@@ -3,16 +3,17 @@ package com.mz.commerce.controller.admin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.common.authentication.Login;
 import com.mz.commerce.common.authentication.SessionConst;
 import com.mz.commerce.common.authentication.SessionUser;
-import com.mz.commerce.common.authentication.SuperAdmin;
 import com.mz.commerce.dto.admin.AdminLoginRequest;
 import com.mz.commerce.dto.admin.AdminLoginResponse;
 import com.mz.commerce.dto.admin.AdminPasswordUpdateRequest;
@@ -25,6 +26,7 @@ import com.mz.commerce.dto.admin.AdminStatusUpdateRequest;
 import com.mz.commerce.dto.admin.AdminStatusUpdateResponse;
 import com.mz.commerce.dto.admin.AdminUpdateRequest;
 import com.mz.commerce.dto.admin.AdminUpdateResponse;
+import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.service.admin.AdminService;
 
 import jakarta.servlet.http.HttpSession;
@@ -64,7 +66,7 @@ public class AdminController {
 	}
 
 	// 관리자 단건 조회
-	@PostMapping("/admins/{id}")
+	@GetMapping("/admins/{id}")
 	public ResponseEntity<AdminResponse> getAdminById(
 		@PathVariable Long id, HttpSession session
 	) {
@@ -73,7 +75,7 @@ public class AdminController {
 	}
 
 	// 관리자 수정 (이름, 이메일, 번호)
-	@SuperAdmin
+	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}")
 	public ResponseEntity<AdminUpdateResponse> updateAdmin(
 		@PathVariable Long id,
@@ -85,7 +87,7 @@ public class AdminController {
 	}
 
 	// 관리자 상태 수정
-	@SuperAdmin
+	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/status")
 	public ResponseEntity<AdminStatusUpdateResponse> updateStatusAdmin(
 		@PathVariable Long id,
@@ -97,7 +99,7 @@ public class AdminController {
 	}
 
 	// 관리자 역할 수정
-	@SuperAdmin
+	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/role")
 	public ResponseEntity<AdminRoleUpdateResponse> updateRoleAdmin(
 		@PathVariable Long id,
@@ -109,7 +111,7 @@ public class AdminController {
 	}
 
 	// 관리자 삭제
-	@SuperAdmin
+	@HigherAdmin(AdminRole.SUPER)
 	@DeleteMapping("/admins/{id}")
 	public ResponseEntity<Void> deleteAdmin(
 		@PathVariable Long id,
