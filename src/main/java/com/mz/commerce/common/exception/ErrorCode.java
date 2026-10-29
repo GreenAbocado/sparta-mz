@@ -37,6 +37,11 @@ public enum ErrorCode {
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "A003", "비밀번호가 일치하지 않습니다."),
 	ADMIN_NOT_ACTIVE(HttpStatus.FORBIDDEN, "A004", "관리자가 '활성' 상태가 아닙니다."),
 	ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "A005", "해당 ID의 관리자를 찾을 수 없습니다."),
+	REJECTION_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "A006", "반려 시에는 사유가 필수입니다."),
+	ADMIN_ALREADY_ACTIVE(HttpStatus.CONFLICT, "A007", "이미 승인된 관리자입니다."),
+	ADMIN_ALREADY_REJECTED(HttpStatus.CONFLICT, "A008", "이미 거부된 관리자입니다."),
+	ADMIN_APPROVAL_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A009", "현재 상태에서는 가입 승인이 불가능합니다."),
+	ADMIN_REJECTION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A010", "현재 상태에서는 가입 거부가 불가능합니다."),
 	// 상품
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
 		"상품 카테고리가 올바르지 않습니다. (사용 가능한 카테고리: ELECTRONICS, CLOTHING, FOOD)"),
