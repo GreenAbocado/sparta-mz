@@ -30,4 +30,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 		Pageable pageable);
 
 	Optional<Customer> findByIdAndDeletedIsNull(Long customerId);
+
+	boolean existsByEmailAndDeletedIsNull(String email);
 }

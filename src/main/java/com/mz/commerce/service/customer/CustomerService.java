@@ -14,6 +14,7 @@ import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.dto.customer.CustomerResponse;
+import com.mz.commerce.dto.customer.CustomerUpdateRequest;
 import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.customer.CustomerStatus;
 import com.mz.commerce.repository.customer.CustomerRepository;
@@ -77,6 +78,31 @@ public class CustomerService {
 	public CustomerResponse getCustomer(Long customerId) {
 		Customer customer = customerRepository.findByIdAndDeletedIsNull(customerId).orElseThrow(
 			() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
+
+		return new CustomerResponse(
+			customer.getId(),
+			customer.getName(),
+			customer.getEmail(),
+			customer.getPhone(),
+			customer.getStatus(),
+			customer.getCreatedAt(),
+			customer.getModifiedAt()
+		);
+	}
+
+	@Transactional
+	public CustomerResponse updateCustomer(Long customerId, CustomerUpdateRequest request) {
+		Customer customer = customerRepository.findByIdAndDeletedIsNull(customerId).orElseThrow(
+			() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
+
+		//중복 email 검증
+		// request.getEmail()
+		boolean emailExist = customerRepository.existsByEmailAndDeletedIsNull(request.getEmail());
+		if (emailExist) {
+			throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+		}
+
+		customer.update(request.getName(), request.getEmail(), request.getPhone());
 
 		return new CustomerResponse(
 			customer.getId(),

@@ -2,6 +2,7 @@ package com.mz.commerce.controller.product;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,6 +31,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/products")
 public class ProductController {
@@ -51,8 +53,8 @@ public class ProductController {
 	@GetMapping
 	public ResponseEntity<PageResponse<ProductResponse>> getProducts(
 		@RequestParam(required = false) String keyword,
-		@Valid @RequestParam(defaultValue = "1") @Min(1) int page,
-		@Valid @RequestParam(defaultValue = "10") @Min(1) int size,
+		@RequestParam(defaultValue = "1") @Min(1) int page,
+		@RequestParam(defaultValue = "10") @Min(1) int size,
 		@RequestParam(defaultValue = "id") String sortBy,
 		@RequestParam(defaultValue = "asc") String sortOrder,
 		@RequestParam(required = false) String category,
@@ -74,7 +76,6 @@ public class ProductController {
 	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{productId}")
 	public ResponseEntity<ProductResponse> updateProduct(
-		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
 		@Valid @RequestBody ProductUpdateRequest request
 	) {
@@ -86,7 +87,6 @@ public class ProductController {
 	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{productId}/stock")
 	public ResponseEntity<ProductResponse> updateProductStock(
-		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
 		@Valid @RequestBody ProductUpdateStockRequest request
 	) {
@@ -98,7 +98,6 @@ public class ProductController {
 	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{productId}/status")
 	public ResponseEntity<ProductResponse> updateProductStatus(
-		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
 		@Valid @RequestBody ProductUpdateStatusRequest request
 	) {
@@ -110,10 +109,10 @@ public class ProductController {
 	@HigherAdmin(AdminRole.OPERATION)
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<ProductDeleteResponse> deleteProduct(
-		@Login SessionUser sessionUser,
 		@PathVariable Long productId
 	) {
 		ProductDeleteResponse response = productService.deleteProduct(productId);
 		return ResponseEntity.ok(response);
 	}
+
 }

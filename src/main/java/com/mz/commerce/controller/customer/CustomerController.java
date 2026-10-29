@@ -4,15 +4,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.dto.customer.CustomerResponse;
+import com.mz.commerce.dto.customer.CustomerUpdateRequest;
+import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.service.customer.CustomerService;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +52,13 @@ public class CustomerController {
 	}
 
 	//고객 정보 수정
+	@HigherAdmin(AdminRole.OPERATION)
+	@PatchMapping("/{customerId}")
+	public ResponseEntity<CustomerResponse> updateCustomer(
+		@PathVariable Long customerId,
+		@Valid @RequestBody CustomerUpdateRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(customerService.updateCustomer(customerId, request));
+	}
 
 	//고객 상태 변경
 
