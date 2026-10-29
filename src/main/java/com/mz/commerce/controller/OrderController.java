@@ -15,7 +15,8 @@ import com.mz.commerce.common.authentication.Login;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.order.OrderCancelRequest;
 import com.mz.commerce.dto.order.OrderCreateRequest;
-import com.mz.commerce.dto.order.OrderResponse;
+import com.mz.commerce.dto.order.OrderDetailResponse;
+import com.mz.commerce.dto.order.OrderSummaryResponse;
 import com.mz.commerce.service.OrderService;
 
 import jakarta.validation.Valid;
@@ -30,24 +31,24 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@PostMapping
-	public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderCreateRequest request,
+	public ResponseEntity<OrderSummaryResponse> createOrder(@Valid @RequestBody OrderCreateRequest request,
 		@Login SessionUser user) {
-		OrderResponse response = orderService.createOrder(request, user.getId());
+		OrderSummaryResponse response = orderService.createOrder(request, user.getId());
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<OrderResponse> getOrder(@Min(1) @PathVariable Long id) {
+	public ResponseEntity<OrderDetailResponse> getOrder(@Min(1) @PathVariable Long id) {
 		return ResponseEntity.ok().body(orderService.getOrder(id));
 	}
 
 	@PatchMapping("/{id}/status")
-	public ResponseEntity<OrderResponse> updateStatus(@Min(1) @PathVariable Long id) {
+	public ResponseEntity<OrderSummaryResponse> updateStatus(@Min(1) @PathVariable Long id) {
 		return ResponseEntity.ok().body(orderService.updateStatus(id));
 	}
 
 	@PatchMapping("/{id}/cancel")
-	public ResponseEntity<OrderResponse> cancel(@Min(1) @PathVariable Long id,
+	public ResponseEntity<OrderSummaryResponse> cancel(@Min(1) @PathVariable Long id,
 		@Valid @RequestBody OrderCancelRequest request) {
 		return ResponseEntity.ok().body(orderService.cancel(request, id));
 	}
