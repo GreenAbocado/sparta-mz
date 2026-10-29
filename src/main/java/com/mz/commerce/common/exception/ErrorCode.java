@@ -45,7 +45,8 @@ public enum ErrorCode {
 	PRODUCT_STATUS_INVALID(HttpStatus.BAD_REQUEST, "P003",
 		"상품 상태가 올바르지 않습니다. (사용 가능한 상태: ON_SALE, SOLD_OUT, DISCONTINUED)"),
 	PRODUCT_SORT_ORDER_INVALID(HttpStatus.BAD_REQUEST, "P004", "정렬 순서는 asc 또는 desc만 가능합니다."),
-	PRODUCT_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "P005", "지원하지 않는 정렬 기준입니다. (price, stock, createdAt)"),
+	PRODUCT_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "P005",
+		"지원하지 않는 정렬 기준입니다. (id, name, category, price, stock, status, createdAt, modifiedAt)"),
 	PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "P006", "해당 ID의 상품을 찾을 수 없습니다."),
 	PRODUCT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "P007", "상품 관리 권한이 없습니다."),
 

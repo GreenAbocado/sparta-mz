@@ -13,13 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.dto.common.PageResponse;
-import com.mz.commerce.dto.product.DeleteProductResponse;
+import com.mz.commerce.dto.product.ProductDeleteResponse;
+import com.mz.commerce.dto.product.ProductRegisterRequest;
 import com.mz.commerce.dto.product.ProductResponse;
-import com.mz.commerce.dto.product.RegisterProductRequest;
+import com.mz.commerce.dto.product.ProductUpdateRequest;
+import com.mz.commerce.dto.product.ProductUpdateStatusRequest;
+import com.mz.commerce.dto.product.ProductUpdateStockRequest;
 import com.mz.commerce.dto.product.RegisteredByResponse;
-import com.mz.commerce.dto.product.UpdateProductRequest;
-import com.mz.commerce.dto.product.UpdateProductStatusRequest;
-import com.mz.commerce.dto.product.UpdateProductStockRequest;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.entity.product.ProductCategory;
@@ -37,7 +37,7 @@ public class ProductService {
 	private final AdminRepository adminRepository;
 
 	@Transactional
-	public ProductResponse registerProduct(Long adminId, RegisterProductRequest request) {
+	public ProductResponse registerProduct(Long adminId, ProductRegisterRequest request) {
 		//관리자 검증
 		Admin admin = adminRepository.findById(adminId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
@@ -106,10 +106,11 @@ public class ProductService {
 
 		// 3. 정렬 기준 검증
 		String sortField = (sortBy == null || sortBy.isBlank())
-			? "price"
+			? "id"
 			: sortBy;
 
-		Set<String> allowedSorts = Set.of("price", "stock", "createdAt");
+		Set<String> allowedSorts = Set.of("id", "name", "category", "price", "stock", "status", "createdAt",
+			"modifiedAt");
 
 		if (!allowedSorts.contains(sortField)) {
 			throw new CustomException(ErrorCode.PRODUCT_SORT_FIELD_INVALID);
@@ -161,7 +162,7 @@ public class ProductService {
 	}
 
 	@Transactional
-	public ProductResponse updateProduct(Long productId, UpdateProductRequest request) {
+	public ProductResponse updateProduct(Long productId, ProductUpdateRequest request) {
 
 		//상품 검증
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
@@ -195,7 +196,7 @@ public class ProductService {
 	}
 
 	@Transactional
-	public ProductResponse updateProductStock(Long productId, UpdateProductStockRequest request) {
+	public ProductResponse updateProductStock(Long productId, ProductUpdateStockRequest request) {
 		//상품 검증
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -224,7 +225,7 @@ public class ProductService {
 	}
 
 	@Transactional
-	public ProductResponse updateProductStatus(Long productId, @Valid UpdateProductStatusRequest request) {
+	public ProductResponse updateProductStatus(Long productId, @Valid ProductUpdateStatusRequest request) {
 
 		//상품 검증
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
@@ -260,7 +261,7 @@ public class ProductService {
 	}
 
 	@Transactional
-	public DeleteProductResponse deleteProduct(Long productId) {
+	public ProductDeleteResponse deleteProduct(Long productId) {
 
 		//상품 검증
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
@@ -271,6 +272,6 @@ public class ProductService {
 		//상품 삭제
 		product.softDelete();
 
-		return new DeleteProductResponse(product.getId(), product.getName(), product.getDeleted());
+		return new ProductDeleteResponse(product.getId(), product.getName(), product.getDeleted());
 	}
 }
