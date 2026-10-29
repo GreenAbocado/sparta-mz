@@ -49,6 +49,14 @@ public class OrderService {
 		return new OrderResponse(order);
 	}
 
+	@Transactional(readOnly = true)
+	public OrderResponse getOrder(Long orderId) {
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
+
+		return new OrderResponse(order);
+	}
+
 	private String makeOrderNo() {
 		String now = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
 		String ranNum = String.format("%06d", random.nextInt(1000000));
