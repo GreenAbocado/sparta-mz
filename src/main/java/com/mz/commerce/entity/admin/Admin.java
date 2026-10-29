@@ -78,17 +78,37 @@ public class Admin extends BaseEntity {
 	public void updateStatus(AdminStatus status, String rejectionReason) {
 		this.status = status;
 		this.rejectionReason = rejectionReason;
+
+		if (status == AdminStatus.REJECTED) {
+			this.rejectedAt = LocalDateTime.now();
+		} else {
+			this.rejectedAt = null;
+		}
 	}
 
 	public void updateRole(AdminRole role) {
 		this.role = role;
 	}
 
-	public void updatePassword(String password) {
-		this.password = password;
+	public void approve() {
+		this.status = AdminStatus.ACTIVE;
+		this.approvedAt = LocalDateTime.now();
+		this.rejectedAt = null;
+		this.rejectionReason = null;
+	}
+
+	public void reject(String rejectionReason) {
+		this.status = AdminStatus.REJECTED;
+		this.rejectedAt = LocalDateTime.now();
+		this.rejectionReason = rejectionReason;
 	}
 
 	public void delete() {
 		this.deleted = LocalDateTime.now();
 	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
+
 }

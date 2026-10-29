@@ -8,17 +8,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.common.authentication.Login;
-import com.mz.commerce.common.authentication.SessionConst;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.admin.AdminLoginRequest;
 import com.mz.commerce.dto.admin.AdminLoginResponse;
 import com.mz.commerce.dto.admin.AdminPasswordUpdateRequest;
 import com.mz.commerce.dto.admin.AdminRegisterRequest;
 import com.mz.commerce.dto.admin.AdminRegisterResponse;
+import com.mz.commerce.dto.admin.AdminRejectRequest;
 import com.mz.commerce.dto.admin.AdminResponse;
 import com.mz.commerce.dto.admin.AdminRoleUpdateRequest;
 import com.mz.commerce.dto.admin.AdminRoleUpdateResponse;
@@ -26,7 +27,9 @@ import com.mz.commerce.dto.admin.AdminStatusUpdateRequest;
 import com.mz.commerce.dto.admin.AdminStatusUpdateResponse;
 import com.mz.commerce.dto.admin.AdminUpdateRequest;
 import com.mz.commerce.dto.admin.AdminUpdateResponse;
+import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.entity.admin.AdminRole;
+import com.mz.commerce.entity.admin.AdminStatus;
 import com.mz.commerce.service.admin.AdminService;
 
 import jakarta.servlet.http.HttpSession;
@@ -38,90 +41,100 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
 	private final AdminService adminService;
 
-	// 회원가입
 	@PostMapping("/admins/register")
 	public ResponseEntity<AdminRegisterResponse> registerAdmin(
 		@RequestBody @Valid AdminRegisterRequest request
 	) {
-		AdminRegisterResponse response = adminService.registerAdmin(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		return ResponseEntity.status(HttpStatus.CREATED).body(adminService.registerAdmin(request));
 	}
 
-	// 로그인
 	@PostMapping("/admins/login")
 	public ResponseEntity<AdminLoginResponse> loginAdmin(
 		@RequestBody @Valid AdminLoginRequest request, HttpSession session
 	) {
-		AdminLoginResponse response = adminService.login(request);
-		SessionUser sessionUser = new SessionUser(response.getId(), response.getAdminRole());
-		session.setAttribute(SessionConst.SESSION_USER, sessionUser);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		SessionUser user = adminService.login(request, session);
+		return ResponseEntity.ok(new AdminLoginResponse(user.getId(), user.getRole()));
 	}
 
-	// 로그아웃
 	@PostMapping("/admins/logout")
 	public ResponseEntity<Void> logout(HttpSession session) {
 		session.invalidate();
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.ok().build();
 	}
 
-	// 관리자 단건 조회
-	@GetMapping("/admins/{id}")
-	public ResponseEntity<AdminResponse> getAdminById(
-		@PathVariable Long id, HttpSession session
-	) {
-		AdminResponse response = adminService.getOne(id);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
-	}
-
-	// 관리자 수정 (이름, 이메일, 번호)
 	@HigherAdmin(AdminRole.SUPER)
+	@GetMapping("/admins")
+	public ResponseEntity<PageResponse<AdminResponse>> getAllAdmins(
+		@RequestParam(required = false) String keyword,
+		@RequestParam(defaultValue = "1") int page,
+		@RequestParam(defaultValue = "10") int size,
+		@RequestParam(defaultValue = "createdAt") String sortBy,
+		@RequestParam(defaultValue = "desc") String sortOrder,
+		@RequestParam(required = false) AdminRole role,
+		@RequestParam(required = false) AdminStatus status
+	) {
+		return ResponseEntity.ok(adminService.getAll(keyword, page, size, sortBy, sortOrder, role, status));
+	}
+
+	@HigherAdmin(AdminRole.SUPER)
+	@GetMapping("/admins/{id}")
+	public ResponseEntity<AdminResponse> getAdminById(@PathVariable Long id) {
+		return ResponseEntity.ok(adminService.getOne(id));
+	}
+
+	@GetMapping("/admins/profile")
+	public ResponseEntity<AdminResponse> getAdminProfile(@Login SessionUser sessionUser) {
+		return ResponseEntity.ok(adminService.getProfile(sessionUser.getId()));
+	}
+
 	@PutMapping("/admins/{id}")
 	public ResponseEntity<AdminUpdateResponse> updateAdmin(
 		@PathVariable Long id,
-		@RequestBody @Valid AdminUpdateRequest request,
-		@Login SessionUser sessionUser
+		@RequestBody @Valid AdminUpdateRequest request
 	) {
-		AdminUpdateResponse response = adminService.updateAdmin(id, request);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.ok(adminService.updateAdmin(id, request));
 	}
 
-	// 관리자 상태 수정
 	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/status")
 	public ResponseEntity<AdminStatusUpdateResponse> updateStatusAdmin(
 		@PathVariable Long id,
-		@RequestBody @Valid AdminStatusUpdateRequest request,
-		@Login SessionUser sessionUser
+		@RequestBody @Valid AdminStatusUpdateRequest request
 	) {
-		AdminStatusUpdateResponse response = adminService.updateAdminStatus(id, request);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.ok(adminService.updateAdminStatus(id, request));
 	}
 
-	// 관리자 역할 수정
 	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/role")
 	public ResponseEntity<AdminRoleUpdateResponse> updateRoleAdmin(
 		@PathVariable Long id,
-		@RequestBody @Valid AdminRoleUpdateRequest request,
-		@Login SessionUser sessionUser
+		@RequestBody @Valid AdminRoleUpdateRequest request
 	) {
-		AdminRoleUpdateResponse response = adminService.updateAdminRole(id, request);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.ok(adminService.updateAdminRole(id, request));
 	}
 
-	// 관리자 삭제
+	@HigherAdmin(AdminRole.SUPER)
+	@PutMapping("/admins/{id}/approve")
+	public ResponseEntity<AdminResponse> approveAdmin(@PathVariable Long id) {
+		return ResponseEntity.ok(adminService.approveAdmin(id));
+	}
+
+	@HigherAdmin(AdminRole.SUPER)
+	@PutMapping("/admins/{id}/reject")
+	public ResponseEntity<AdminResponse> rejectAdmin(
+		@PathVariable Long id,
+		@Valid @RequestBody AdminRejectRequest request
+	) {
+		return ResponseEntity.ok(adminService.rejectAdmin(id, request.getRejectionReason()));
+	}
+
 	@HigherAdmin(AdminRole.SUPER)
 	@DeleteMapping("/admins/{id}")
-	public ResponseEntity<Void> deleteAdmin(
-		@PathVariable Long id,
-		@Login SessionUser sessionUser
-	) {
+	public ResponseEntity<Void> deleteAdmin(@PathVariable Long id) {
 		adminService.adminDelete(id);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.noContent().build();
 	}
 
-	// 관리자 프로필 수정
 	@PutMapping("/admins/profile")
 	public ResponseEntity<AdminResponse> updateAdminProfile(
 		@RequestBody @Valid AdminUpdateRequest request,
@@ -131,7 +144,6 @@ public class AdminController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	// 관리자 비밀번호 수정
 	@PutMapping("/admins/profile/password")
 	public ResponseEntity<Void> updateAdminPassword(
 		@RequestBody @Valid AdminPasswordUpdateRequest request,
@@ -140,5 +152,4 @@ public class AdminController {
 		adminService.updateAdminPassword(sessionUser.getId(), request);
 		return ResponseEntity.ok().build();
 	}
-
 }
