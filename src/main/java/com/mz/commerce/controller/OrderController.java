@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mz.commerce.common.authentication.Login;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.order.OrderCreateRequest;
+import com.mz.commerce.dto.order.OrderDeleteRequest;
 import com.mz.commerce.dto.order.OrderResponse;
 import com.mz.commerce.service.OrderService;
 
@@ -43,5 +44,11 @@ public class OrderController {
 	@PatchMapping("/{id}")
 	public ResponseEntity<OrderResponse> updateStatus(@Min(1) @PathVariable Long id) {
 		return ResponseEntity.ok().body(orderService.updateStatus(id));
+	}
+
+	@PatchMapping("/{id}/cancel")
+	public ResponseEntity<OrderResponse> deleteStatus(@Min(1) @PathVariable Long id,
+		@RequestBody OrderDeleteRequest request) {
+		return ResponseEntity.ok().body(orderService.cancel(request, id));
 	}
 }

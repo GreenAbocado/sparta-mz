@@ -77,7 +77,8 @@ public enum ErrorCode {
 
 	// 주문
 	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "주문을 찾을 수 없습니다."),
-	ORDER_STATUS_NOT_CHANGEABLE(HttpStatus.CONFLICT, "O002", "배송완료/취소의 경우 상태를 변경할 수 없습니다.");
+	ORDER_STATUS_NOT_CHANGEABLE(HttpStatus.CONFLICT, "O002", "배송이 완료되거나 취소된 경우 상태를 변경할 수 없습니다."),
+	ORDER_STATUS_NOT_CANCEL(HttpStatus.CONFLICT, "O003", "주문이 준비 중일 경우에만 취소가 가능합니다.");
 
 	/** HTTP 응답 상태 코드 */
 	private final HttpStatus status;

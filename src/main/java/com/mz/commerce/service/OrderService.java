@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.dto.order.OrderCreateRequest;
+import com.mz.commerce.dto.order.OrderDeleteRequest;
 import com.mz.commerce.dto.order.OrderResponse;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.order.Order;
@@ -59,6 +60,13 @@ public class OrderService {
 	public OrderResponse updateStatus(Long orderId) {
 		Order order = getOrderById(orderId);
 		order.updateStatus();
+		return new OrderResponse(order);
+	}
+
+	@Transactional
+	public OrderResponse cancel(OrderDeleteRequest request, Long orderId) {
+		Order order = getOrderById(orderId);
+		order.cancel(request.getCancelReason());
 		return new OrderResponse(order);
 	}
 

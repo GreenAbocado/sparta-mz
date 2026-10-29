@@ -1,7 +1,10 @@
 package com.mz.commerce.entity.order;
 
+import static com.mz.commerce.common.exception.ErrorCode.*;
+
 import java.time.LocalDateTime;
 
+import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.entity.BaseEntity;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.product.Product;
@@ -84,5 +87,17 @@ public class Order extends BaseEntity {
 
 	public void updateStatus() {
 		this.status = status.next();
+	}
+
+	public void cancel(String cancelReason) {
+		if (status != OrderStatus.PREPARING) {
+			throw new CustomException(ORDER_STATUS_NOT_CANCEL);
+		}
+
+		status = OrderStatus.CANCEL;
+
+		this.cancelReason = cancelReason;
+
+		product.increaseStock(productCount);
 	}
 }

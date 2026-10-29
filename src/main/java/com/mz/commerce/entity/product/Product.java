@@ -108,8 +108,6 @@ public class Product extends BaseEntity {
 		}
 	}
 
-
-
 	public void decreaseStock(int amount) {
 		if (stock < amount) {
 			throw new CustomException(PRODUCT_OUT_OF_STOCK);
@@ -118,6 +116,14 @@ public class Product extends BaseEntity {
 
 		if (stock == 0) {
 			status = ProductStatus.SOLD_OUT;
+		}
+	}
+
+	public void increaseStock(int amount) {
+		stock += amount;
+
+		if (status != ProductStatus.DISCONTINUED) {
+			status = ProductStatus.ON_SALE;
 		}
 	}
 }
