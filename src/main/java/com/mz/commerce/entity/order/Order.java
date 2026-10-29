@@ -69,11 +69,10 @@ public class Order extends BaseEntity {
 	@Column(nullable = false)
 	private long unitPrice;
 
-	private LocalDateTime deleted;
+	@Column(nullable = false)
+	private long totalPrice;
 
-	public long getTotalPrice() {
-		return productCount * unitPrice;
-	}
+	private LocalDateTime deleted;
 
 	public Order( /* customer */Admin createdBy, Product product, String orderNo, int productCount) {
 		// this.customer =
@@ -83,6 +82,7 @@ public class Order extends BaseEntity {
 		this.productCount = productCount;
 		this.status = OrderStatus.PREPARING;
 		this.unitPrice = product.getPrice();
+		this.totalPrice = productCount * product.getPrice();
 	}
 
 	public void updateStatus() {
