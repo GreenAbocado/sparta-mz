@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.common.authentication.Login;
+import com.mz.commerce.common.authentication.SessionConst;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.admin.AdminLoginRequest;
 import com.mz.commerce.dto.admin.AdminLoginResponse;
@@ -52,8 +53,10 @@ public class AdminController {
 	public ResponseEntity<AdminLoginResponse> loginAdmin(
 		@RequestBody @Valid AdminLoginRequest request, HttpSession session
 	) {
-		SessionUser user = adminService.login(request, session);
-		return ResponseEntity.ok(new AdminLoginResponse(user.getId(), user.getRole()));
+		AdminLoginResponse response = adminService.login(request);
+		SessionUser sessionUser = new SessionUser(response.getId(), response.getAdminRole());
+		session.setAttribute(SessionConst.SESSION_USER, sessionUser);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@PostMapping("/admins/logout")

@@ -12,11 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mz.commerce.common.authentication.SessionConst;
-import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.dto.admin.AdminLoginRequest;
+import com.mz.commerce.dto.admin.AdminLoginResponse;
 import com.mz.commerce.dto.admin.AdminPasswordUpdateRequest;
 import com.mz.commerce.dto.admin.AdminRegisterRequest;
 import com.mz.commerce.dto.admin.AdminRegisterResponse;
@@ -33,7 +32,6 @@ import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
 import com.mz.commerce.repository.admin.AdminRepository;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -55,7 +53,7 @@ public class AdminService {
 		Admin admin = new Admin(
 			request.getName(),
 			request.getEmail(),
-			request.getPassword(),
+			passwordEncoder.encode(request.getPassword()),
 			request.getPhone(),
 			AdminStatus.PENDING,
 			AdminRole.OPERATION
@@ -66,11 +64,11 @@ public class AdminService {
 
 	// 로그인: 인증된 관리자 정보를 세션에 저장
 	@Transactional(readOnly = true)
-	public SessionUser login(AdminLoginRequest request, HttpSession session) {
+	public AdminLoginResponse login(AdminLoginRequest request) {
 		Admin admin = adminRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
 
-		if (!admin.getPassword().equals(request.getPassword())) {
+		if (!passwordEncoder.matches(admin.getPassword(), request.getPassword())) {
 			throw new CustomException(ErrorCode.INVALID_PASSWORD);
 		}
 
@@ -78,11 +76,7 @@ public class AdminService {
 			throw new CustomException(ErrorCode.ADMIN_NOT_ACTIVE);
 		}
 
-		SessionUser sessionUser =
-			new SessionUser(admin.getId(), admin.getRole());
-
-		session.setAttribute(SessionConst.SESSION_USER, sessionUser);
-		return sessionUser;
+		return new AdminLoginResponse(admin.getId(), admin.getRole());
 	}
 
 	// 관리자 목록: 검색, 필터, 정렬, 페이지네이션
