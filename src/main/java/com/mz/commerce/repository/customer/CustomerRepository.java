@@ -31,5 +31,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
 	Optional<Customer> findByIdAndDeletedIsNull(Long customerId);
 
-	boolean existsByEmailAndDeletedIsNull(String email);
+	boolean existsByEmail(String email);
 }

@@ -3,6 +3,7 @@ package com.mz.commerce.controller.customer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.dto.common.PageResponse;
+import com.mz.commerce.dto.customer.CustomerDeleteResponse;
 import com.mz.commerce.dto.customer.CustomerResponse;
 import com.mz.commerce.dto.customer.CustomerUpdateRequest;
 import com.mz.commerce.dto.customer.CustomerUpdateStatusRequest;
@@ -52,7 +54,7 @@ public class CustomerController {
 		return ResponseEntity.status(HttpStatus.OK).body(customerService.getCustomer(customerId));
 	}
 
-	//고객 정보 수정
+	//고객 정보 수정 (OP 관리자 이상)
 	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{customerId}")
 	public ResponseEntity<CustomerResponse> updateCustomer(
@@ -61,7 +63,7 @@ public class CustomerController {
 		return ResponseEntity.status(HttpStatus.OK).body(customerService.updateCustomer(customerId, request));
 	}
 
-	//고객 상태 변경
+	//고객 상태 변경 (OP 관리자 이상)
 	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{customerId}/status")
 	public ResponseEntity<CustomerResponse> updateCustomerStatus(
@@ -71,4 +73,10 @@ public class CustomerController {
 	}
 
 	//고객 삭제
+	@HigherAdmin(AdminRole.OPERATION)
+	@DeleteMapping("/{customerId}")
+	public ResponseEntity<CustomerDeleteResponse> deleteCustomer(
+		@PathVariable Long customerId) {
+		return ResponseEntity.ok(customerService.deleteCustomer(customerId));
+	}
 }

@@ -111,8 +111,7 @@ public class ProductController {
 	public ResponseEntity<ProductDeleteResponse> deleteProduct(
 		@PathVariable Long productId
 	) {
-		ProductDeleteResponse response = productService.deleteProduct(productId);
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(productService.deleteProduct(productId));
 	}
 
 }

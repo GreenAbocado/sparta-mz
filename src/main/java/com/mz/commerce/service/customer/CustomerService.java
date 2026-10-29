@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.dto.common.PageResponse;
+import com.mz.commerce.dto.customer.CustomerDeleteResponse;
 import com.mz.commerce.dto.customer.CustomerResponse;
 import com.mz.commerce.dto.customer.CustomerUpdateRequest;
 import com.mz.commerce.dto.customer.CustomerUpdateStatusRequest;
@@ -97,7 +98,7 @@ public class CustomerService {
 			() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
 
 		//중복 email 검증
-		boolean emailExist = customerRepository.existsByEmailAndDeletedIsNull(request.getEmail());
+		boolean emailExist = customerRepository.existsByEmail(request.getEmail());
 		if (emailExist) {
 			throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
 		}
@@ -138,5 +139,16 @@ public class CustomerService {
 			customer.getCreatedAt(),
 			customer.getModifiedAt()
 		);
+	}
+
+	@Transactional
+	public CustomerDeleteResponse deleteCustomer(Long customerId) {
+		Customer customer = customerRepository.findByIdAndDeletedIsNull(customerId).orElseThrow(
+			() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
+
+		//고개 정보 삭제
+		customer.softDelete();
+
+		return new CustomerDeleteResponse(customer.getId(), customer.getName(), customer.getDeleted());
 	}
 }
