@@ -37,7 +37,7 @@ public class ProductController {
 	private final ProductService productService;
 
 	//상품 등록 (OP 관리자 이상)
-	@HigherAdmin(role = AdminRole.OPERATION)
+	@HigherAdmin(AdminRole.OPERATION)
 	@PostMapping
 	public ResponseEntity<ProductResponse> registerProduct(
 		@Login SessionUser sessionUser,
@@ -71,7 +71,7 @@ public class ProductController {
 	}
 
 	//상품 정보 수정 (상품명, 카테고리, 가격) (OP 관리자 이상)
-	@HigherAdmin(role = AdminRole.OPERATION)
+	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{productId}")
 	public ResponseEntity<ProductResponse> updateProduct(
 		@Login SessionUser sessionUser,
@@ -83,7 +83,7 @@ public class ProductController {
 	}
 
 	//상품 재고 변경 (OP 관리자 이상)
-	@HigherAdmin(role = AdminRole.OPERATION)
+	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{productId}/stock")
 	public ResponseEntity<ProductResponse> updateProductStock(
 		@Login SessionUser sessionUser,
@@ -95,7 +95,7 @@ public class ProductController {
 	}
 
 	//상품 상태 변경 (OP 관리자 이상)
-	@HigherAdmin(role = AdminRole.OPERATION)
+	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{productId}/status")
 	public ResponseEntity<ProductResponse> updateProductStatus(
 		@Login SessionUser sessionUser,
@@ -107,7 +107,7 @@ public class ProductController {
 	}
 
 	// 상품 삭제 (OP 관리자 이상)
-	@HigherAdmin(role = AdminRole.OPERATION)
+	@HigherAdmin(AdminRole.OPERATION)
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<DeleteProductResponse> deleteProduct(
 		@Login SessionUser sessionUser,

@@ -18,5 +18,5 @@ import com.mz.commerce.entity.admin.AdminRole;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HigherAdmin {
-	AdminRole role() default AdminRole.CS;
+	AdminRole value() default AdminRole.CS;
 }
