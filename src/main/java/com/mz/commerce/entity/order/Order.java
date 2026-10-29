@@ -67,4 +67,18 @@ public class Order extends BaseEntity {
 	private long unitPrice;
 
 	private LocalDateTime deleted;
+
+	public long getTotalPrice() {
+		return productCount * unitPrice;
+	}
+
+	public Order( /* customer */Admin createdBy, Product product, String orderNo, int productCount) {
+		// this.customer =
+		this.createdBy = createdBy;
+		this.product = product;
+		this.orderNo = orderNo;
+		this.productCount = productCount;
+		this.status = OrderStatus.PREPARING;
+		this.unitPrice = product.getPrice();
+	}
 }
