@@ -48,7 +48,7 @@ public class SuperAdminInterceptor implements HandlerInterceptor {
 		}
 
 		// lowerRole: 애너테이션으로 정의한 최소 권한. role: 실제 세션에 저장된 권한
-		AdminRole lowerRole = admin.role();
+		AdminRole lowerRole = admin.value();
 		AdminRole role = ((SessionUser)request.getSession(false)
 			.getAttribute(SessionConst.SESSION_USER)).getRole();
 
