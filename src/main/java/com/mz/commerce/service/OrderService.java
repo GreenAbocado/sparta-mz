@@ -27,7 +27,8 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final ProductRepository productRepository;
 	private final AdminRepository adminRepository;
-	private static final Random random = new Random();
+	// customerRepository
+	private static final Random RANDOM = new Random();
 
 	// 주문 번호 UK 중복으로 DB 예외 가능
 	@Transactional
@@ -51,15 +52,24 @@ public class OrderService {
 
 	@Transactional(readOnly = true)
 	public OrderResponse getOrder(Long orderId) {
-		Order order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
+		return new OrderResponse(getOrderById(orderId));
+	}
 
+	@Transactional
+	public OrderResponse updateStatus(Long orderId) {
+		Order order = getOrderById(orderId);
+		order.updateStatus();
 		return new OrderResponse(order);
+	}
+
+	private Order getOrderById(Long id) {
+		return orderRepository.findById(id)
+			.orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 	}
 
 	private String makeOrderNo() {
 		String now = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-		String ranNum = String.format("%06d", random.nextInt(1000000));
+		String ranNum = String.format("%06d", RANDOM.nextInt(1000000));
 		return now + ranNum;
 	}
 }

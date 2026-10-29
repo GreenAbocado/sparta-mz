@@ -81,4 +81,8 @@ public class Order extends BaseEntity {
 		this.status = OrderStatus.PREPARING;
 		this.unitPrice = product.getPrice();
 	}
+
+	public void updateStatus() {
+		this.status = status.next();
+	}
 }

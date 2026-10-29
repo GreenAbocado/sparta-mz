@@ -76,7 +76,8 @@ public enum ErrorCode {
 	PRODUCT_OUT_OF_STOCK(HttpStatus.CONFLICT, "P009", "상품 재고가 부족합니다."),
 
 	// 주문
-	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "주문을 찾을 수 없습니다.");
+	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "주문을 찾을 수 없습니다."),
+	ORDER_STATUS_NOT_CHANGEABLE(HttpStatus.CONFLICT, "O002", "배송완료/취소의 경우 상태를 변경할 수 없습니다.");
 
 	/** HTTP 응답 상태 코드 */
 	private final HttpStatus status;
