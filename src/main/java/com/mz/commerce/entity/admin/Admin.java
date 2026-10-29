@@ -74,4 +74,17 @@ public class Admin extends BaseEntity {
 		this.email = email;
 		this.phone = phone;
 	}
+
+	public void updateStatus(AdminStatus status, String rejectionReason) {
+		this.status = status;
+		this.rejectionReason = rejectionReason;
+	}
+
+	public void updateRole(AdminRole role) {
+		this.role = role;
+	}
+
+	public void delete() {
+		this.deleted = LocalDateTime.now();
+	}
 }

@@ -37,6 +37,7 @@ public enum ErrorCode {
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "A003", "비밀번호가 일치하지 않습니다."),
 	ADMIN_NOT_ACTIVE(HttpStatus.FORBIDDEN, "A004", "관리자가 '활성' 상태가 아닙니다."),
 	ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "A005", "존재하지 않는 관리자입니다."),
+	REJECTION_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "A006", "반려 시에는 사유가 필수입니다."),
 	// 상품
 
 	// 주문
