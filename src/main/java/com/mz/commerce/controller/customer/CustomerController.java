@@ -1,21 +1,41 @@
 package com.mz.commerce.controller.customer;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mz.commerce.dto.common.PageResponse;
+import com.mz.commerce.dto.customer.CustomerResponse;
 import com.mz.commerce.service.customer.CustomerService;
 
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/customers")
 public class CustomerController {
-	private CustomerService customerService;
+	private final CustomerService customerService;
 
 	//고객 등록 -> 생략
 
 	//고객 리스트 조회
+	@GetMapping
+	public ResponseEntity<PageResponse<CustomerResponse>> getCustomers(
+		@RequestParam(required = false) String keyword,
+		@RequestParam(defaultValue = "1") @Min(1) int page,
+		@RequestParam(defaultValue = "10") @Min(1) int size,
+		@RequestParam(defaultValue = "id") String sortBy,
+		@RequestParam(defaultValue = "asc") String sortOrder,
+		@RequestParam(required = false) String status) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(customerService.getAllCustomers(keyword, page, size, sortBy, sortOrder, status));
+	}
 
 	//고객 상세 조회
 
