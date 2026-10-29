@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
 	/**
 	 * HTTP 요청 형식 오류를 처리합니다.
 	 *
-	 * <p>JSON 문법 오류, 타입 불일치, 쿼리 누락이 해당됩니다.
+	 * <p>JSON 파싱 오류, 타입 불일치, 쿼리 누락이 해당됩니다.
 	 * {@link ErrorCode#REQUEST_FORMAT_INVALID}에 대응됩니다.
 	 */
 	@ExceptionHandler({HttpMessageNotReadableException.class,
@@ -38,14 +39,14 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * DTO Bean Validation 검증 오류를 처리합니다.
+	 * DTO 검증, ModelAttribute 등 BindingResult 관련 오류를 처리합니다.
 	 *
 	 * <p>{@link ErrorCode#REQUEST_VALIDATION_FAILED}에 대응됩니다.
 	 * {@link MethodArgumentNotValidException#getBindingResult}를 통해 꺼낸 fieldError로
 	 * {@link ErrorResponse}를 생성할 때 필드별 에러 내역을 상세히 담습니다.
 	 */
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
+	@ExceptionHandler(BindException.class)
+	public ResponseEntity<ErrorResponse> handleValidationException(BindException e) {
 		List<FieldErrorResponse> fieldErrors = e.getBindingResult().getFieldErrors().stream()
 			.map(FieldErrorResponse::new).toList();
 
