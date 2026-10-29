@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.dto.order.OrderCancelRequest;
 import com.mz.commerce.dto.order.OrderCreateRequest;
-import com.mz.commerce.dto.order.OrderResponse;
+import com.mz.commerce.dto.order.OrderDetailResponse;
+import com.mz.commerce.dto.order.OrderSummaryResponse;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.order.Order;
 import com.mz.commerce.entity.product.Product;
@@ -33,7 +34,7 @@ public class OrderService {
 
 	// 주문 번호 UK 중복으로 DB 예외 가능
 	@Transactional
-	public OrderResponse createOrder(OrderCreateRequest request, Long sessionId) {
+	public OrderSummaryResponse createOrder(OrderCreateRequest request, Long sessionId) {
 		Admin admin = adminRepository.findById(sessionId)
 			.orElseThrow(() -> new CustomException(ADMIN_NOT_FOUND));
 
@@ -48,26 +49,27 @@ public class OrderService {
 
 		Order order =
 			orderRepository.save(new Order(admin, product, makeOrderNo(), request.getQuantity()));
-		return new OrderResponse(order);
+		return new OrderSummaryResponse(order);
 	}
 
 	@Transactional(readOnly = true)
-	public OrderResponse getOrder(Long orderId) {
-		return new OrderResponse(getOrderById(orderId));
+	public OrderDetailResponse getOrder(Long orderId) {
+		return orderRepository.findByOrderIdInDto(orderId)
+			.orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 	}
 
 	@Transactional
-	public OrderResponse updateStatus(Long orderId) {
+	public OrderSummaryResponse updateStatus(Long orderId) {
 		Order order = getOrderById(orderId);
 		order.updateStatus();
-		return new OrderResponse(order);
+		return new OrderSummaryResponse(order);
 	}
 
 	@Transactional
-	public OrderResponse cancel(OrderCancelRequest request, Long orderId) {
+	public OrderSummaryResponse cancel(OrderCancelRequest request, Long orderId) {
 		Order order = getOrderById(orderId);
 		order.cancel(request.getCancelReason());
-		return new OrderResponse(order);
+		return new OrderSummaryResponse(order);
 	}
 
 	private Order getOrderById(Long id) {
