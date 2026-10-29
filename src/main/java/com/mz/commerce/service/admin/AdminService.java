@@ -55,7 +55,7 @@ public class AdminService {
 		Admin admin = new Admin(
 			request.getName(),
 			request.getEmail(),
-			request.getPassword(),
+			passwordEncoder.encode(request.getPassword()), // 비밀번호 암호화
 			request.getPhone(),
 			AdminStatus.PENDING,
 			AdminRole.OPERATION
@@ -70,7 +70,7 @@ public class AdminService {
 		Admin admin = adminRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
 
-		if (!admin.getPassword().equals(request.getPassword())) {
+		if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
 			throw new CustomException(ErrorCode.INVALID_PASSWORD);
 		}
 

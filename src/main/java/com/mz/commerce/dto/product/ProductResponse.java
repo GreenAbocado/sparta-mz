@@ -3,6 +3,7 @@ package com.mz.commerce.dto.product;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.entity.product.ProductCategory;
 import com.mz.commerce.entity.product.ProductStatus;
@@ -35,6 +36,8 @@ public class ProductResponse {
 	private final RegisteredByResponse registeredBy;
 
 	public ProductResponse(Product product) {
+		Admin admin = product.getRegisteredBy();
+
 		this.id = product.getId();
 		this.name = product.getName();
 		this.category = product.getCategory();
@@ -44,9 +47,9 @@ public class ProductResponse {
 		this.createdAt = product.getCreatedAt();
 		this.modifiedAt = product.getModifiedAt();
 		this.registeredBy = new RegisteredByResponse(
-			product.getRegisteredBy().getId(),
-			product.getRegisteredBy().getName(),
-			product.getRegisteredBy().getEmail()
+			admin.getId(),
+			admin.getName(),
+			admin.getEmail()
 		);
 	}
 

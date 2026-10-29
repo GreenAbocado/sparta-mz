@@ -19,7 +19,6 @@ import com.mz.commerce.dto.product.ProductResponse;
 import com.mz.commerce.dto.product.ProductUpdateRequest;
 import com.mz.commerce.dto.product.ProductUpdateStatusRequest;
 import com.mz.commerce.dto.product.ProductUpdateStockRequest;
-import com.mz.commerce.dto.product.RegisteredByResponse;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.entity.product.ProductCategory;
@@ -42,7 +41,7 @@ public class ProductService {
 		Admin admin = adminRepository.findById(adminId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ADMIN_NOT_FOUND));
 
-		//category + status 검증
+		//category 검증
 		ProductCategory productCategory;
 		try {
 			productCategory = ProductCategory.valueOf(request.getCategory());
@@ -50,33 +49,12 @@ public class ProductService {
 			throw new CustomException(ErrorCode.PRODUCT_CATEGORY_INVALID);
 		}
 
-		//판매중과 품절은 현재 재고 기준으로 자동 결정
-		ProductStatus productStatus;
-		if (request.getSetAsDiscontinued()) {
-			productStatus = ProductStatus.DISCONTINUED;
-		} else if (request.getStock() <= 0) {
-			productStatus = ProductStatus.SOLD_OUT;
-		} else {
-			productStatus = ProductStatus.ON_SALE;
-		}
-
+		//상품 생성
 		Product product = new Product(admin, request.getName(), productCategory, request.getPrice(), request.getStock(),
-			productStatus);
+			request.getSetAsDiscontinued());
 		Product savedProduct = productRepository.save(product);
 
-		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
-
-		return new ProductResponse(
-			savedProduct.getId(),
-			savedProduct.getName(),
-			savedProduct.getCategory(),
-			savedProduct.getPrice(),
-			savedProduct.getStock(),
-			savedProduct.getStatus(),
-			savedProduct.getCreatedAt(),
-			savedProduct.getModifiedAt(),
-			registeredBy
-		);
+		return new ProductResponse(savedProduct);
 	}
 
 	@Transactional(readOnly = true)
@@ -144,21 +122,7 @@ public class ProductService {
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-		//등록한 관리자 불러오기
-		Admin admin = product.getRegisteredBy();
-		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
-
-		return new ProductResponse(
-			product.getId(),
-			product.getName(),
-			product.getCategory(),
-			product.getPrice(),
-			product.getStock(),
-			product.getStatus(),
-			product.getCreatedAt(),
-			product.getModifiedAt(),
-			registeredBy
-		);
+		return new ProductResponse(product);
 	}
 
 	@Transactional
@@ -178,21 +142,7 @@ public class ProductService {
 
 		product.update(request.getName(), productCategory, request.getPrice());
 
-		//등록한 관리자 불러오기
-		Admin admin = product.getRegisteredBy();
-		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
-
-		return new ProductResponse(
-			product.getId(),
-			product.getName(),
-			product.getCategory(),
-			product.getPrice(),
-			product.getStock(),
-			product.getStatus(),
-			product.getCreatedAt(),
-			product.getModifiedAt(),
-			registeredBy
-		);
+		return new ProductResponse(product);
 	}
 
 	@Transactional
@@ -203,25 +153,8 @@ public class ProductService {
 
 		//재고가 0 이하이면 품절, 1 이상이면 판매중으로 전환, 단종 상태는 무시
 		product.updateStock(request.getStock());
-		if (product.getStatus() != ProductStatus.DISCONTINUED) {
-			product.updateStatus(product.getStock() <= 0 ? ProductStatus.SOLD_OUT : ProductStatus.ON_SALE);
-		}
 
-		//등록한 관리자 불러오기
-		Admin admin = product.getRegisteredBy();
-		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
-
-		return new ProductResponse(
-			product.getId(),
-			product.getName(),
-			product.getCategory(),
-			product.getPrice(),
-			product.getStock(),
-			product.getStatus(),
-			product.getCreatedAt(),
-			product.getModifiedAt(),
-			registeredBy
-		);
+		return new ProductResponse(product);
 	}
 
 	@Transactional
@@ -232,32 +165,9 @@ public class ProductService {
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
 		//상품 상태 변경
-		ProductStatus productStatus;
-		if (request.getSetAsDiscontinued()) {
-			productStatus = ProductStatus.DISCONTINUED;
-		} else if (product.getStock() <= 0) {
-			productStatus = ProductStatus.SOLD_OUT;
-		} else {
-			productStatus = ProductStatus.ON_SALE;
-		}
+		product.updateStatus(request.getSetAsDiscontinued());
 
-		product.updateStatus(productStatus);
-
-		//등록한 관리자 불러오기
-		Admin admin = product.getRegisteredBy();
-		RegisteredByResponse registeredBy = new RegisteredByResponse(admin.getId(), admin.getName(), admin.getEmail());
-
-		return new ProductResponse(
-			product.getId(),
-			product.getName(),
-			product.getCategory(),
-			product.getPrice(),
-			product.getStock(),
-			product.getStatus(),
-			product.getCreatedAt(),
-			product.getModifiedAt(),
-			registeredBy
-		);
+		return new ProductResponse(product);
 	}
 
 	@Transactional
@@ -266,8 +176,6 @@ public class ProductService {
 		//상품 검증
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-
-		//해당 주문도 soft delete  orderRespository.findByProductId
 
 		//상품 삭제
 		product.softDelete();

@@ -1,6 +1,7 @@
 package com.mz.commerce.common.initializer;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.mz.commerce.entity.admin.Admin;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
+	private final PasswordEncoder passwordEncoder;
 	private final AdminRepository adminRepository;
 	private final ProductRepository productRepository;
 	//private final CustomerRepository customerRepository;
@@ -32,13 +34,13 @@ public class DataInitializer implements CommandLineRunner {
 		// 관리자 초기 데이터
 
 		//그냥 테스트용입니다! 변경하셔도 됩니다
-		if (adminRepository.existsByEmail("superadmin@example.com")) {
+		if (adminRepository.existsByEmail("superadmin@super.com")) {
 			return;
 		}
 		Admin superAdmin = new Admin(
 			"superadmin",
 			"superadmin@super.com",
-			"admin123",
+			passwordEncoder.encode("admin123"),
 			"010-1234-5678",
 			AdminStatus.ACTIVE,
 			AdminRole.SUPER

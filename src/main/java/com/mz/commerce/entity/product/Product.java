@@ -7,6 +7,8 @@ import com.mz.commerce.entity.admin.Admin;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +36,7 @@ public class Product extends BaseEntity {
 	@Column(nullable = false, length = 100)
 	private String name;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 50)
 	private ProductCategory category;
 
@@ -41,8 +44,9 @@ public class Product extends BaseEntity {
 	private Long price;
 
 	@Column(nullable = false)
-	private int stock;
+	private Integer stock;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private ProductStatus status;
 
@@ -54,13 +58,18 @@ public class Product extends BaseEntity {
 		this.deleted = LocalDateTime.now();
 	}
 
-	public Product(Admin admin, String name, ProductCategory category, Long price, int stock, ProductStatus status) {
+	public Product(Admin admin, String name, ProductCategory category, Long price, int stock, Boolean discontinued) {
 		this.registeredBy = admin;
 		this.name = name;
 		this.category = category;
 		this.price = price;
 		this.stock = stock;
-		this.status = status;
+
+		if (Boolean.TRUE.equals(discontinued)) {
+			this.status = ProductStatus.DISCONTINUED;
+		} else {
+			updateStatusByStock();
+		}
 	}
 
 	public void update(String name, ProductCategory category, Long price) {
@@ -69,11 +78,30 @@ public class Product extends BaseEntity {
 		this.price = price;
 	}
 
+	//재고에 따라 상태도 변경
 	public void updateStock(int stock) {
 		this.stock = stock;
+		updateStatusByStock();
 	}
 
-	public void updateStatus(ProductStatus status) {
-		this.status = status;
+	private void updateStatusByStock() {
+		if (this.status == ProductStatus.DISCONTINUED) {
+			return;
+		}
+
+		this.status = this.stock <= 0
+			? ProductStatus.SOLD_OUT
+			: ProductStatus.ON_SALE;
+	}
+
+	//상태만 변경
+	public void updateStatus(Boolean setAsDiscontinued) {
+		if (Boolean.TRUE.equals(setAsDiscontinued)) {
+			this.status = ProductStatus.DISCONTINUED;
+		} else {
+			this.status = this.stock <= 0
+				? ProductStatus.SOLD_OUT
+				: ProductStatus.ON_SALE;
+		}
 	}
 }
