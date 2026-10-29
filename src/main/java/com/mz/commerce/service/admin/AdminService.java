@@ -49,6 +49,9 @@ public class AdminService {
 		if (adminRepository.existsByEmail(request.getEmail())) {
 			throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
 		}
+		if (request.getPassword().length() < 8) {
+			throw new CustomException(ErrorCode.WEAK_PASSWORD);
+		}
 
 		Admin admin = new Admin(
 			request.getName(),
@@ -66,17 +69,31 @@ public class AdminService {
 	@Transactional(readOnly = true)
 	public AdminLoginResponse login(AdminLoginRequest request) {
 		Admin admin = adminRepository.findByEmail(request.getEmail())
-			.orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGIN));
 
-		if (!passwordEncoder.matches(admin.getPassword(), request.getPassword())) {
-			throw new CustomException(ErrorCode.INVALID_PASSWORD);
+		if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
+			throw new CustomException(ErrorCode.INVALID_LOGIN);
 		}
 
-		if (admin.getStatus() != AdminStatus.ACTIVE) {
-			throw new CustomException(ErrorCode.ADMIN_NOT_ACTIVE);
+		if (admin.getDeleted() != null) {
+			throw new CustomException(ErrorCode.ADMIN_NOT_FOUND);
 		}
 
-		return new AdminLoginResponse(admin.getId(), admin.getRole());
+		switch (admin.getStatus()) {
+			case ACTIVE:
+				return new AdminLoginResponse(admin.getId(), admin.getRole());
+			case PENDING:
+				throw new CustomException(ErrorCode.ADMIN_PENDING);
+			case REJECTED:
+				throw new CustomException(ErrorCode.ADMIN_REJECTED);
+			case SUSPENDED:
+				throw new CustomException(ErrorCode.ADMIN_SUSPENDED);
+			case INACTIVE:
+				throw new CustomException(ErrorCode.ADMIN_INACTIVE);
+			default:
+				throw new CustomException(ErrorCode.WRONG_ACCESS);
+		}
+
 	}
 
 	// 관리자 목록: 검색, 필터, 정렬, 페이지네이션
