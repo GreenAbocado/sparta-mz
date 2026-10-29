@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
+import com.mz.commerce.repository.AdminRepository;
+import com.mz.commerce.repository.ProductRepository;
 import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.customer.CustomerStatus;
-import com.mz.commerce.repository.admin.AdminRepository;
 import com.mz.commerce.repository.customer.CustomerRepository;
-import com.mz.commerce.repository.product.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 

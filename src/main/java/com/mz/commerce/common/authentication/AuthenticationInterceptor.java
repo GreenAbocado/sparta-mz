@@ -8,7 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.common.exception.ErrorCode;
-import com.mz.commerce.repository.admin.AdminRepository;
+import com.mz.commerce.repository.AdminRepository;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

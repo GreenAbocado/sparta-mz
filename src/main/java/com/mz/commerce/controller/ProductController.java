@@ -1,4 +1,4 @@
-package com.mz.commerce.controller.product;
+package com.mz.commerce.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ import com.mz.commerce.dto.product.ProductUpdateRequest;
 import com.mz.commerce.dto.product.ProductUpdateStatusRequest;
 import com.mz.commerce.dto.product.ProductUpdateStockRequest;
 import com.mz.commerce.entity.admin.AdminRole;
-import com.mz.commerce.service.product.ProductService;
+import com.mz.commerce.service.ProductService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;

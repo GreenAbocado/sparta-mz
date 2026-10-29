@@ -1,4 +1,4 @@
-package com.mz.commerce.service.product;
+package com.mz.commerce.service;
 
 import java.util.Locale;
 import java.util.Set;
@@ -23,8 +23,8 @@ import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.entity.product.ProductCategory;
 import com.mz.commerce.entity.product.ProductStatus;
-import com.mz.commerce.repository.admin.AdminRepository;
-import com.mz.commerce.repository.product.ProductRepository;
+import com.mz.commerce.repository.AdminRepository;
+import com.mz.commerce.repository.ProductRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
