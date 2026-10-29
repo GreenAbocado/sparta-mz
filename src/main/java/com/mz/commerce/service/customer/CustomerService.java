@@ -72,4 +72,20 @@ public class CustomerService {
 
 		return new PageResponse<>(responsePage);
 	}
+
+	@Transactional(readOnly = true)
+	public CustomerResponse getCustomer(Long customerId) {
+		Customer customer = customerRepository.findByIdAndDeletedIsNull(customerId).orElseThrow(
+			() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
+
+		return new CustomerResponse(
+			customer.getId(),
+			customer.getName(),
+			customer.getEmail(),
+			customer.getPhone(),
+			customer.getStatus(),
+			customer.getCreatedAt(),
+			customer.getModifiedAt()
+		);
+	}
 }

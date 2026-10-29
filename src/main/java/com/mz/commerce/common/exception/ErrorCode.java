@@ -44,6 +44,7 @@ public enum ErrorCode {
 	CUSTOMER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "G009", "유효하지 않은 상태입니다. (ACTIVE, INACTIVE, SUSPENDED)"),
 	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",
 		"지원하지 않는 정렬 기준입니다. (id, name, email, phone, status, createdAt, modifiedAt)"),
+	CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "C003", "해당 ID의 고객 정보를 찾을 수 없습니다."),
 
 	// 상품
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
