@@ -15,6 +15,7 @@ import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.dto.customer.CustomerResponse;
 import com.mz.commerce.dto.customer.CustomerUpdateRequest;
+import com.mz.commerce.dto.customer.CustomerUpdateStatusRequest;
 import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.service.customer.CustomerService;
 
@@ -61,6 +62,13 @@ public class CustomerController {
 	}
 
 	//고객 상태 변경
+	@HigherAdmin(AdminRole.OPERATION)
+	@PatchMapping("/{customerId}/status")
+	public ResponseEntity<CustomerResponse> updateCustomerStatus(
+		@PathVariable Long customerId,
+		@Valid @RequestBody CustomerUpdateStatusRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(customerService.updateCustomerStatus(customerId, request));
+	}
 
 	//고객 삭제
 }

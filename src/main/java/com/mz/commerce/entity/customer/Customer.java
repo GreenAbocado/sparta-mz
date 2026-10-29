@@ -60,4 +60,8 @@ public class Customer extends BaseEntity {
 		this.email = email;
 		this.phone = phone;
 	}
+
+	public void updateStatus(CustomerStatus status) {
+		this.status = status;
+	}
 }
