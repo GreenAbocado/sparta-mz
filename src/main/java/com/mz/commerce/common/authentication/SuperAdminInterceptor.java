@@ -63,10 +63,6 @@ public class SuperAdminInterceptor implements HandlerInterceptor {
 		if (role == AdminRole.SUPER) {
 			return true;
 		}
-
-		if (lowerRole == AdminRole.OPERATION) {
-			return role == AdminRole.OPERATION;
-		}
-		return false;
+		return role == lowerRole;
 	}
 }
