@@ -68,4 +68,10 @@ public class Admin extends BaseEntity {
 		this.status = status != null ? status : AdminStatus.PENDING;
 		this.role = role != null ? role : AdminRole.OPERATION;
 	}
+
+	public void update(String name, String email, String phone) {
+		this.name = name;
+		this.email = email;
+		this.phone = phone;
+	}
 }

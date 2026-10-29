@@ -36,6 +36,7 @@ public enum ErrorCode {
 	EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "존재하지 않는 이메일입니다."),
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "A003", "비밀번호가 일치하지 않습니다."),
 	ADMIN_NOT_ACTIVE(HttpStatus.FORBIDDEN, "A004", "관리자가 '활성' 상태가 아닙니다."),
+	ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "A005", "존재하지 않는 관리자입니다."),
 	// 상품
 
 	// 주문
