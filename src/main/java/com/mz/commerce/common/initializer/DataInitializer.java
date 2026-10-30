@@ -11,6 +11,10 @@ import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
 import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.customer.CustomerStatus;
+import com.mz.commerce.entity.order.Order;
+import com.mz.commerce.entity.product.Product;
+import com.mz.commerce.entity.product.ProductCategory;
+import com.mz.commerce.entity.product.ProductStatus;
 import com.mz.commerce.repository.AdminRepository;
 import com.mz.commerce.repository.OrderRepository;
 import com.mz.commerce.repository.ProductRepository;
@@ -79,10 +83,34 @@ public class DataInitializer implements CommandLineRunner {
 	}
 
 	private void initializeProducts() {
-		// 상품 초기 데이터
+		Admin admin = adminRepository.findById(1L).orElseThrow();
+
+		Product product1 = new Product(admin, "상품1", ProductCategory.ELECTRONICS, 1000L, 10, ProductStatus.ON_SALE);
+		Product product2 = new Product(admin, "상품2", ProductCategory.ELECTRONICS, 50L, 10,
+			ProductStatus.ON_SALE);
+		Product product3 = new Product(admin, "상품3", ProductCategory.ELECTRONICS, 10L, 10, ProductStatus.ON_SALE);
+
+		productRepository.save(product1);
+		productRepository.save(product2);
+		productRepository.save(product3);
 	}
 
 	private void initializeOrders() {
+		Customer customer = customerRepository.findById(1L).orElseThrow();
+		Customer customer2 = customerRepository.findById(2L).orElseThrow();
+
+		Admin admin = adminRepository.findById(1L).orElseThrow();
+		Product product = productRepository.findById(1L).orElseThrow();
+		Product product2 = productRepository.findById(2L).orElseThrow();
+		Product product3 = productRepository.findById(3L).orElseThrow();
+
+		Order order = new Order(customer, admin, product, "261030-010239", 5);
+		Order order2 = new Order(customer, admin, product2, "261030-052191", 10);
+		Order order3 = new Order(customer, admin, product3, "261030-152812", 30);
+		Order order4 = new Order(customer2, admin, product, "260110-124921", 40);
+		Order order5 = new Order(customer2, admin, product, "260110-124942", 40);
+
+		orderRepository.saveAll(List.of(order, order2, order3, order4, order5));
 		// 주문 초기 데이터
 	}
 }
