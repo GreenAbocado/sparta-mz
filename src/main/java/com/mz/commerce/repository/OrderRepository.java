@@ -2,12 +2,16 @@ package com.mz.commerce.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.mz.commerce.dto.order.OrderDetailResponse;
+import com.mz.commerce.dto.order.OrderSummaryResponse;
 import com.mz.commerce.entity.order.Order;
+import com.mz.commerce.entity.order.OrderStatus;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
@@ -20,14 +24,36 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	@Query("""
 		SELECT new com.mz.commerce.dto.order.OrderDetailResponse(
 			o.orderNo, c.name, c.email, p.name,
-			o.productCount,o.unitPrice * o.productCount,
+			o.productCount,o.totalPrice,
 			o.createdAt, o.status, a.name, a.email, a.role)
 		FROM Order o
 		JOIN o.customer c
 		JOIN o.product p
 		LEFT JOIN o.createdBy a
-		WHERE o.id = :id
+		WHERE o.id=:id AND o.deleted IS null
 		""")
 	Optional<OrderDetailResponse> findByOrderIdInDto(@Param("id") Long id);
 
+	/**
+	 * 주문 목록 조회 시 사용되는 DTO 프로젝션입니다.
+	 *
+	 * <p>검색 키워드, 상태 필터 등 필터링이 있는 복잡한 쿼리이며,
+	 * <br>연관 엔티티가 3개나 있어 최대 3N개의 추가 쿼리가 나갈 수 있으므로 조회에 적합한 DTO 프로젝션 사용합니다.
+	 */
+	@Query("""
+		SELECT new com.mz.commerce.dto.order.OrderSummaryResponse(
+			o.id, o.orderNo, c.name, p.name, o.productCount,
+			o.totalPrice, o.createdAt, o.status, a.name
+		)
+		FROM Order o
+		JOIN o.product p
+		JOIN o.customer c
+		LEFT JOIN o.createdBy a
+		WHERE (:keyword IS null or o.orderNo LIKE CONCAT('%', :keyword, '%') or c.name LIKE CONCAT('%', :keyword, '%')) AND
+		(:status IS null or o.status = :status) AND o.deleted IS null
+		""")
+	Page<OrderSummaryResponse> findOrderPageInDto(Pageable pageable, @Param("keyword") String keyword,
+		@Param("status") OrderStatus status);
+
+	Optional<Order> findByIdAndDeletedIsNull(Long id);
 }

@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mz.commerce.common.exception.CustomException;
+import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.dto.order.OrderCancelRequest;
 import com.mz.commerce.dto.order.OrderCreateRequest;
 import com.mz.commerce.dto.order.OrderDetailResponse;
+import com.mz.commerce.dto.order.OrderSearchRequest;
 import com.mz.commerce.dto.order.OrderSummaryResponse;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.order.Order;
@@ -50,6 +52,12 @@ public class OrderService {
 		Order order =
 			orderRepository.save(new Order(admin, product, makeOrderNo(), request.getQuantity()));
 		return new OrderSummaryResponse(order);
+	}
+
+	@Transactional(readOnly = true)
+	public PageResponse<OrderSummaryResponse> getOrders(OrderSearchRequest request) {
+		return new PageResponse<>(
+			orderRepository.findOrderPageInDto(request.toPageable(), request.getKeyword(), request.getStatus()));
 	}
 
 	// soft delete 여부 JPQL에서 직접 적용
