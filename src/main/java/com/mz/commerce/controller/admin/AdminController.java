@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.common.authentication.Login;
+import com.mz.commerce.common.authentication.SessionConst;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.admin.AdminLoginRequest;
 import com.mz.commerce.dto.admin.AdminLoginResponse;
@@ -32,6 +33,7 @@ import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
 import com.mz.commerce.service.admin.AdminService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,10 +52,19 @@ public class AdminController {
 
 	@PostMapping("/admins/login")
 	public ResponseEntity<AdminLoginResponse> loginAdmin(
-		@RequestBody @Valid AdminLoginRequest request, HttpSession session
+		@RequestBody @Valid AdminLoginRequest request, HttpServletRequest servletRequest
 	) {
-		SessionUser user = adminService.login(request, session);
-		return ResponseEntity.ok(new AdminLoginResponse(user.getId(), user.getRole()));
+		AdminLoginResponse response = adminService.login(request);
+		HttpSession oldSession = servletRequest.getSession(false);
+		if (oldSession != null) {
+			oldSession.invalidate();
+
+		}
+		HttpSession newSession = servletRequest.getSession(true);
+		SessionUser sessionUser = new SessionUser(response.getId(), response.getAdminRole());
+		newSession.setAttribute(SessionConst.SESSION_USER, sessionUser);
+
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@PostMapping("/admins/logout")
