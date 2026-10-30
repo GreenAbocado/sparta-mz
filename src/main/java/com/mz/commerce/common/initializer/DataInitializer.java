@@ -60,8 +60,46 @@ public class DataInitializer implements CommandLineRunner {
 			AdminStatus.ACTIVE,
 			AdminRole.SUPER
 		);
-		adminRepository.save(superAdmin);
-		adminRepository.save(superAdmin2);
+
+		Admin operationAdmin1 = new Admin(
+			"정도윤",
+			"doyun.jung@company.com",
+			passwordEncoder.encode("admin123"),
+			"010-6789-1234",
+			AdminStatus.ACTIVE,
+			AdminRole.OPERATION
+		);
+
+		Admin operationAdmin2 = new Admin(
+			"한예린",
+			"yerin.han@company.com",
+			passwordEncoder.encode("admin123"),
+			"010-7890-1234",
+			AdminStatus.ACTIVE,
+			AdminRole.OPERATION
+		);
+
+		Admin csAdmin1 = new Admin(
+			"오현우",
+			"hyunwoo.oh@company.com",
+			passwordEncoder.encode("admin123"),
+			"010-8901-2345",
+			AdminStatus.ACTIVE,
+			AdminRole.CS
+		);
+
+		Admin csAdmin2 = new Admin(
+			"윤가은",
+			"gaeun.yoon@company.com",
+			passwordEncoder.encode("admin123"),
+			"010-9012-3456",
+			AdminStatus.ACTIVE,
+			AdminRole.CS
+		);
+
+		adminRepository.saveAll(List.of(
+			superAdmin, superAdmin2, operationAdmin1, operationAdmin2, csAdmin1, csAdmin2
+		));
 	}
 
 	private void initializeCustomers() {
@@ -90,7 +128,7 @@ public class DataInitializer implements CommandLineRunner {
 	private void initializeProducts() {
 		Admin admin = adminRepository.findById(1L).orElseThrow();
 
-		Product product1 = new Product(admin, "상품1", ProductCategory.ELECTRONICS, 1000L, 10, true);
+		Product product1 = new Product(admin, "상품1", ProductCategory.ELECTRONICS, 1000L, 10, false);
 		Product product2 = new Product(admin, "상품2", ProductCategory.ELECTRONICS, 50L, 10, true);
 		Product product3 = new Product(admin, "상품3", ProductCategory.ELECTRONICS, 10L, 10, true);
 

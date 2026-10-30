@@ -26,11 +26,12 @@ public class CustomerResponse {
 	private final String email;
 	private final String phone;
 	private final CustomerStatus status;
+	private final Long totalOrderCount;
+	private final Long totalPurchaseAmount;
 	private final LocalDateTime createdAt;
 	private final LocalDateTime modifiedAt;
-	//order list 추가
 
-	public CustomerResponse(Customer customer) {
+	public CustomerResponse(Customer customer, CustomerOrderSummary customerOrderSummary) {
 		this.id = customer.getId();
 		this.name = customer.getName();
 		this.email = customer.getEmail();
@@ -38,6 +39,7 @@ public class CustomerResponse {
 		this.status = customer.getStatus();
 		this.createdAt = customer.getCreatedAt();
 		this.modifiedAt = customer.getModifiedAt();
-		//order list 추기
+		this.totalOrderCount = customerOrderSummary.getTotalOrderCount();
+		this.totalPurchaseAmount = customerOrderSummary.getTotalPurchaseAmount();
 	}
 }

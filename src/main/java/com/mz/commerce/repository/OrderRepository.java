@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.mz.commerce.dto.customer.CustomerOrderSummary;
 import com.mz.commerce.dto.order.OrderDetailResponse;
 import com.mz.commerce.dto.order.OrderSummaryResponse;
 import com.mz.commerce.entity.order.Order;
@@ -54,6 +55,21 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 		""")
 	Page<OrderSummaryResponse> findOrderPageInDto(Pageable pageable, @Param("keyword") String keyword,
 		@Param("status") OrderStatus status);
+
+	@Query("""
+			SELECT new com.mz.commerce.dto.customer.CustomerOrderSummary(
+				COUNT(o.id),
+				SUM(o.totalPrice)
+			)
+			FROM Order o
+			WHERE o.customer.id = :customerId
+			  AND o.status = :status
+			  AND o.deleted IS NULL
+		""")
+	CustomerOrderSummary findTotalOrderSummary(
+		@Param("customerId") Long customerId,
+		@Param("status") OrderStatus status
+	);
 
 	Optional<Order> findByIdAndDeletedIsNull(Long id);
 }
