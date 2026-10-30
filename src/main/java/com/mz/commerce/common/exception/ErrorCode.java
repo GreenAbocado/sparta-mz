@@ -49,7 +49,10 @@ public enum ErrorCode {
 	ADMIN_PENDING(HttpStatus.FORBIDDEN, "A015", "관리자가 '승인 대기' 상태입니다."),
 	ADMIN_SUSPENDED(HttpStatus.FORBIDDEN, "A016", "관리자가 '정지' 상태입니다."),
 	WRONG_ACCESS(HttpStatus.BAD_REQUEST, "A017", "잘못된 접근입니다"),
-
+	INVALID_PAGE_REQUEST(HttpStatus.BAD_REQUEST, "A018", "페이지와 페이지 크기는 1 이상이어야 합니다."),
+	INVALID_SORT_FIELD(HttpStatus.BAD_REQUEST, "A019", "지원하지 않는 정렬 필드입니다."),
+	INVALID_SORT_ORDER(HttpStatus.BAD_REQUEST, "A020", "정렬 순서는 asc 또는 desc여야 합니다."),
+	INVALID_ADMIN_ROLE(HttpStatus.BAD_REQUEST, "A021", "슈퍼 관리자로는 가입할 수 없습니다."),
 	// 고객
 	CUSTOMER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "G009", "유효하지 않은 상태입니다. (ACTIVE, INACTIVE, SUSPENDED)"),
 	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",
