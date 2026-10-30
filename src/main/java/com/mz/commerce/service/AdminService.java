@@ -188,10 +188,14 @@ public class AdminService {
 
 	@Transactional
 	public AdminUpdateResponse updateAdmin(
+		Long sessionId,
 		Long id,
 		AdminUpdateRequest request
 	) {
 		Admin admin = findAdmin(id);
+
+		// 본인 및 다른 SUPER 관리자 대상 작업 방지
+		validateAdminOperation(sessionId, admin);
 
 		if (!admin.getEmail().equals(request.getEmail())
 			&& adminRepository.existsByEmail(request.getEmail())) {
@@ -209,10 +213,15 @@ public class AdminService {
 
 	@Transactional
 	public AdminStatusUpdateResponse updateAdminStatus(
+		Long sessionId,
 		Long id,
 		AdminStatusUpdateRequest request
 	) {
 		Admin admin = findAdmin(id);
+
+		// 본인 및 다른 SUPER 관리자 대상 작업 방지
+		validateAdminOperation(sessionId, admin);
+
 		AdminStatus status = request.getStatus();
 		String rejectionReason = request.getRejectionReason();
 
@@ -231,10 +240,15 @@ public class AdminService {
 
 	@Transactional
 	public AdminRoleUpdateResponse updateAdminRole(
+		Long sessionId,
 		Long id,
 		AdminRoleUpdateRequest request
 	) {
 		Admin admin = findAdmin(id);
+
+		// 본인 및 다른 SUPER 관리자 대상 작업 방지
+		validateAdminOperation(sessionId, admin);
+
 		admin.updateRole(request.getRole());
 
 		return new AdminRoleUpdateResponse(admin);
@@ -242,8 +256,11 @@ public class AdminService {
 
 	// 가입 승인: Admin 엔티티의 승인 메서드 사용
 	@Transactional
-	public AdminResponse approveAdmin(Long id) {
+	public AdminResponse approveAdmin(Long sessionId, Long id) {
 		Admin admin = findAdmin(id);
+
+		// 본인 및 다른 SUPER 관리자 대상 작업 방지
+		validateAdminOperation(sessionId, admin);
 
 		admin.approve();
 		return new AdminResponse(admin);
@@ -251,8 +268,11 @@ public class AdminService {
 
 	// 가입 반려: 반려 사유 필수
 	@Transactional
-	public AdminResponse rejectAdmin(Long id, String rejectionReason) {
+	public AdminResponse rejectAdmin(Long sessionId, Long id, String rejectionReason) {
 		Admin admin = findAdmin(id);
+
+		// 본인 및 다른 SUPER 관리자 대상 작업 방지
+		validateAdminOperation(sessionId, admin);
 
 		admin.reject(rejectionReason);
 		return new AdminResponse(admin);
@@ -280,8 +300,12 @@ public class AdminService {
 	}
 
 	@Transactional
-	public void adminDelete(Long id) {
+	public void adminDelete(Long sessionId, Long id) {
 		Admin admin = findAdmin(id);
+
+		// 본인 및 다른 SUPER 관리자 대상 작업 방지
+		validateAdminOperation(sessionId, admin);
+
 		admin.delete();
 	}
 
@@ -290,5 +314,17 @@ public class AdminService {
 			.orElseThrow(() ->
 				new CustomException(ErrorCode.ADMIN_NOT_FOUND)
 			);
+	}
+
+	private void validateAdminOperation(Long requesterId, Admin targetAdmin) {
+		// 본인 대상 작업 방지
+		if (requesterId.equals(targetAdmin.getId())) {
+			throw new CustomException(ErrorCode.ADMIN_OPERATION_FORBIDDEN);
+		}
+
+		// 다른 SUPER 관리자 대상 작업 방지
+		if (targetAdmin.getRole() == AdminRole.SUPER) {
+			throw new CustomException(ErrorCode.ADMIN_OPERATION_FORBIDDEN);
+		}
 	}
 }

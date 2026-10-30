@@ -15,9 +15,9 @@ import com.mz.commerce.entity.order.Order;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.entity.product.ProductCategory;
 import com.mz.commerce.repository.AdminRepository;
+import com.mz.commerce.repository.CustomerRepository;
 import com.mz.commerce.repository.OrderRepository;
 import com.mz.commerce.repository.ProductRepository;
-import com.mz.commerce.repository.customer.CustomerRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,9 +40,6 @@ public class DataInitializer implements CommandLineRunner {
 	}
 
 	private void initializeAdmins() {
-		// 관리자 초기 데이터
-
-		//그냥 테스트용입니다! 변경하셔도 됩니다
 		if (adminRepository.existsByEmail("superadmin@super.com")) {
 			return;
 		}
@@ -54,7 +51,17 @@ public class DataInitializer implements CommandLineRunner {
 			AdminStatus.ACTIVE,
 			AdminRole.SUPER
 		);
+
+		Admin superAdmin2 = new Admin(
+			"superadmin2",
+			"superadmin2@super.com",
+			passwordEncoder.encode("admin123"),
+			"010-1234-5578",
+			AdminStatus.ACTIVE,
+			AdminRole.SUPER
+		);
 		adminRepository.save(superAdmin);
+		adminRepository.save(superAdmin2);
 	}
 
 	private void initializeCustomers() {

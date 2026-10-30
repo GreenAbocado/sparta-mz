@@ -19,7 +19,7 @@ import com.mz.commerce.dto.customer.CustomerUpdateRequest;
 import com.mz.commerce.dto.customer.CustomerUpdateStatusRequest;
 import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.customer.CustomerStatus;
-import com.mz.commerce.repository.customer.CustomerRepository;
+import com.mz.commerce.repository.CustomerRepository;
 
 import lombok.RequiredArgsConstructor;
 

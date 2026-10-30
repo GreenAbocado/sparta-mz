@@ -1,4 +1,4 @@
-package com.mz.commerce.repository.customer;
+package com.mz.commerce.repository;
 
 import java.util.Optional;
 

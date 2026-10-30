@@ -53,8 +53,10 @@ public enum ErrorCode {
 	INVALID_SORT_FIELD(HttpStatus.BAD_REQUEST, "A019", "지원하지 않는 정렬 필드입니다."),
 	INVALID_SORT_ORDER(HttpStatus.BAD_REQUEST, "A020", "정렬 순서는 asc 또는 desc여야 합니다."),
 	INVALID_ADMIN_ROLE(HttpStatus.BAD_REQUEST, "A021", "슈퍼 관리자로는 가입할 수 없습니다."),
+	ADMIN_OPERATION_FORBIDDEN(HttpStatus.FORBIDDEN, "A022", "본인 또는 SUPER 관리자를 대상으로 해당 작업을 수행할 수 없습니다."),
+
 	// 고객
-	CUSTOMER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "G009", "유효하지 않은 상태입니다. (ACTIVE, INACTIVE, SUSPENDED)"),
+	CUSTOMER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "C001", "유효하지 않은 상태입니다. (ACTIVE, INACTIVE, SUSPENDED)"),
 	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",
 		"지원하지 않는 정렬 기준입니다. (id, name, email, phone, status, createdAt, modifiedAt)"),
 	CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "C003", "해당 ID의 고객 정보를 찾을 수 없습니다."),
@@ -62,18 +64,13 @@ public enum ErrorCode {
 	// 상품
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
 		"상품 카테고리가 올바르지 않습니다. (사용 가능한 카테고리: ELECTRONICS, CLOTHING, FOOD)"),
-	PRODUCT_REGISTER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "P002",
-		"상품 등록 시 직접 선택할 수 있는 상태는 DISCONTINUED뿐입니다. 판매중과 품절은 재고에 따라 자동으로 결정됩니다."),
-	PRODUCT_STATUS_INVALID(HttpStatus.BAD_REQUEST, "P003",
+	PRODUCT_STATUS_INVALID(HttpStatus.BAD_REQUEST, "P002",
 		"상품 상태가 올바르지 않습니다. (사용 가능한 상태: ON_SALE, SOLD_OUT, DISCONTINUED)"),
-	PRODUCT_SORT_ORDER_INVALID(HttpStatus.BAD_REQUEST, "P004", "정렬 순서는 asc 또는 desc만 가능합니다."),
-	PRODUCT_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "P005",
+	PRODUCT_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "P003",
 		"지원하지 않는 정렬 기준입니다. (id, name, category, price, stock, status, createdAt, modifiedAt)"),
-	PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "P006", "해당 ID의 상품을 찾을 수 없습니다."),
-	PRODUCT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "P007", "상품 관리 권한이 없습니다."),
-
-	PRODUCT_STATUS_NOT_ORDERABLE(HttpStatus.CONFLICT, "P008", "현재 상품 상태로는 주문할 수 없습니다,"),
-	PRODUCT_OUT_OF_STOCK(HttpStatus.CONFLICT, "P009", "상품 재고가 부족합니다."),
+	PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "P004", "해당 ID의 상품을 찾을 수 없습니다."),
+	PRODUCT_STATUS_NOT_ORDERABLE(HttpStatus.CONFLICT, "P005", "현재 상품 상태로는 주문할 수 없습니다,"),
+	PRODUCT_OUT_OF_STOCK(HttpStatus.CONFLICT, "P006", "상품 재고가 부족합니다."),
 
 	// 주문
 	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "주문을 찾을 수 없습니다."),
