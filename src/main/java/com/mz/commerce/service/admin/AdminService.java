@@ -97,24 +97,18 @@ public class AdminService {
 		AdminStatus status
 	) {
 		if (page < 1 || size < 1) {
-			throw new IllegalArgumentException(
-				"페이지와 페이지 크기는 1 이상이어야 합니다."
-			);
+			throw new CustomException(ErrorCode.INVALID_PAGE_REQUEST);
 		}
 
 		if (!SORT_FIELDS.contains(sortBy)) {
-			throw new IllegalArgumentException(
-				"지원하지 않는 정렬 필드입니다: " + sortBy
-			);
+			throw new CustomException(ErrorCode.INVALID_SORT_FIELD);
 		}
 
 		Sort.Direction direction;
 		try {
 			direction = Sort.Direction.fromString(sortOrder);
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(
-				"정렬 순서는 asc 또는 desc여야 합니다."
-			);
+			throw new CustomException(ErrorCode.INVALID_SORT_ORDER);
 		}
 
 		Pageable pageable = PageRequest.of(
@@ -235,17 +229,17 @@ public class AdminService {
 	public AdminResponse approveAdmin(Long id) {
 		Admin admin = findAdmin(id);
 
-		if (admin.getStatus() == AdminStatus.ACTIVE) {
-			throw new CustomException(ErrorCode.ADMIN_ALREADY_ACTIVE);
-		}
-
-		if (admin.getStatus() == AdminStatus.REJECTED) {
-			throw new CustomException(ErrorCode.ADMIN_ALREADY_REJECTED);
-		}
-
-		if (admin.getStatus() != AdminStatus.PENDING) {
-			throw new CustomException(ErrorCode.ADMIN_APPROVAL_NOT_ALLOWED);
-		}
+		// if (admin.getStatus() == AdminStatus.ACTIVE) {
+		// 	throw new CustomException(ErrorCode.ADMIN_ALREADY_ACTIVE);
+		// }
+		//
+		// if (admin.getStatus() == AdminStatus.REJECTED) {
+		// 	throw new CustomException(ErrorCode.ADMIN_ALREADY_REJECTED);
+		// }
+		//
+		// if (admin.getStatus() != AdminStatus.PENDING) {
+		// 	throw new CustomException(ErrorCode.ADMIN_APPROVAL_NOT_ALLOWED);
+		// }
 
 		admin.approve();
 		return new AdminResponse(admin);
@@ -256,21 +250,21 @@ public class AdminService {
 	public AdminResponse rejectAdmin(Long id, String rejectionReason) {
 		Admin admin = findAdmin(id);
 
-		if (rejectionReason == null || rejectionReason.isBlank()) {
-			throw new CustomException(ErrorCode.REJECTION_REASON_REQUIRED);
-		}
-
-		if (admin.getStatus() == AdminStatus.REJECTED) {
-			throw new CustomException(ErrorCode.ADMIN_ALREADY_REJECTED);
-		}
-
-		if (admin.getStatus() == AdminStatus.ACTIVE) {
-			throw new CustomException(ErrorCode.ADMIN_ALREADY_ACTIVE);
-		}
-
-		if (admin.getStatus() != AdminStatus.PENDING) {
-			throw new CustomException(ErrorCode.ADMIN_REJECTION_NOT_ALLOWED);
-		}
+		// if (rejectionReason == null || rejectionReason.isBlank()) {
+		// 	throw new CustomException(ErrorCode.REJECTION_REASON_REQUIRED);
+		// }
+		//
+		// if (admin.getStatus() == AdminStatus.REJECTED) {
+		// 	throw new CustomException(ErrorCode.ADMIN_ALREADY_REJECTED);
+		// }
+		//
+		// if (admin.getStatus() == AdminStatus.ACTIVE) {
+		// 	throw new CustomException(ErrorCode.ADMIN_ALREADY_ACTIVE);
+		// }
+		//
+		// if (admin.getStatus() != AdminStatus.PENDING) {
+		// 	throw new CustomException(ErrorCode.ADMIN_REJECTION_NOT_ALLOWED);
+		// }
 
 		admin.reject(rejectionReason);
 		return new AdminResponse(admin);
@@ -304,8 +298,7 @@ public class AdminService {
 	}
 
 	private Admin findAdmin(Long id) {
-		return adminRepository.findById(id)
-			.filter(admin -> admin.getDeleted() == null)
+		return adminRepository.findByIdAndDeletedIsNull(id)
 			.orElseThrow(() ->
 				new CustomException(ErrorCode.ADMIN_NOT_FOUND)
 			);

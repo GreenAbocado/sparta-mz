@@ -20,6 +20,7 @@ public class AdminResponse {
 	private AdminRole role;
 	private LocalDateTime approvedAt;
 	private LocalDateTime rejectedAt;
+	private LocalDateTime createdAt;
 	private String rejectionReason;
 
 	public AdminResponse(Admin admin) {
@@ -31,6 +32,7 @@ public class AdminResponse {
 		this.role = admin.getRole();
 		this.approvedAt = admin.getApprovedAt();
 		this.rejectedAt = admin.getRejectedAt();
+		this.createdAt = admin.getCreatedAt();
 		this.rejectionReason = admin.getRejectionReason();
 	}
 }
