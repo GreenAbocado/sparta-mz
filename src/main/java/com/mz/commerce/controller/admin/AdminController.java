@@ -33,6 +33,7 @@ import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
 import com.mz.commerce.service.admin.AdminService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,11 +52,18 @@ public class AdminController {
 
 	@PostMapping("/admins/login")
 	public ResponseEntity<AdminLoginResponse> loginAdmin(
-		@RequestBody @Valid AdminLoginRequest request, HttpSession session
+		@RequestBody @Valid AdminLoginRequest request, HttpServletRequest servletRequest
 	) {
 		AdminLoginResponse response = adminService.login(request);
+		HttpSession oldSession = servletRequest.getSession(false);
+		if (oldSession != null) {
+			oldSession.invalidate();
+
+		}
+		HttpSession newSession = servletRequest.getSession(true);
 		SessionUser sessionUser = new SessionUser(response.getId(), response.getAdminRole());
-		session.setAttribute(SessionConst.SESSION_USER, sessionUser);
+		newSession.setAttribute(SessionConst.SESSION_USER, sessionUser);
+
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
