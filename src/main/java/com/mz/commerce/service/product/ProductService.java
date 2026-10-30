@@ -128,7 +128,7 @@ public class ProductService {
 		} else if (direction.equals("desc")) {
 			sort = Sort.by(sortField).descending();
 		} else {
-			throw new CustomException(ErrorCode.PRODUCT_SORT_ORDER_INVALID);
+			throw new CustomException(ErrorCode.SORT_ORDER_INVALID);
 		}
 		Pageable pageable = PageRequest.of(page - 1, size, sort);
 

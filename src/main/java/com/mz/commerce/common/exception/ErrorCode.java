@@ -29,9 +29,11 @@ public enum ErrorCode {
 	SESSION_INVALIDATED(HttpStatus.CONFLICT, "G006", "세션이 강제 만료되었습니다. 다시 로그인 해주세요."),
 	AUTHORIZED_FORBIDDEN(HttpStatus.FORBIDDEN, "G007", "관리자 인가에 실패하였습니다."),
 
+	SORT_ORDER_INVALID(HttpStatus.BAD_REQUEST, "G008", "정렬 순서는 asc 또는 desc만 가능합니다."),
+
 	SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G500", "서버 내부 오류입니다."),
 
-	// 회원
+	// 관리자
 	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
 	EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "존재하지 않는 이메일입니다."),
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "A003", "비밀번호가 일치하지 않습니다."),
@@ -42,6 +44,13 @@ public enum ErrorCode {
 	ADMIN_ALREADY_REJECTED(HttpStatus.CONFLICT, "A008", "이미 거부된 관리자입니다."),
 	ADMIN_APPROVAL_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A009", "현재 상태에서는 가입 승인이 불가능합니다."),
 	ADMIN_REJECTION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A010", "현재 상태에서는 가입 거부가 불가능합니다."),
+
+	// 고객
+	CUSTOMER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "G009", "유효하지 않은 상태입니다. (ACTIVE, INACTIVE, SUSPENDED)"),
+	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",
+		"지원하지 않는 정렬 기준입니다. (id, name, email, phone, status, createdAt, modifiedAt)"),
+	CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "C003", "해당 ID의 고객 정보를 찾을 수 없습니다."),
+
 	// 상품
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
 		"상품 카테고리가 올바르지 않습니다. (사용 가능한 카테고리: ELECTRONICS, CLOTHING, FOOD)"),
