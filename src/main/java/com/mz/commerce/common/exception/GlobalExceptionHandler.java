@@ -17,7 +17,9 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 전역 예외 처리를 담당합니다.
@@ -25,6 +27,7 @@ import jakarta.validation.ConstraintViolationException;
  * <p>각 예외를 {@link ErrorCode}에 대응시켜 {@link ErrorResponse}로 변환합니다.
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
 	// 형식
@@ -38,7 +41,8 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler({HttpMessageNotReadableException.class,
 		MethodArgumentTypeMismatchException.class,
 		MissingServletRequestParameterException.class})
-	public ResponseEntity<ErrorResponse> handleHttpFormatException() {
+	public ResponseEntity<ErrorResponse> handleHttpFormatException(HttpServletRequest request, Exception e) {
+		printWarnLog(request, e.getClass().getSimpleName());
 		return buildResponseEntity(REQUEST_FORMAT_INVALID);
 	}
 
@@ -52,10 +56,10 @@ public class GlobalExceptionHandler {
 	 * {@link ErrorResponse}를 생성할 때 필드별 에러 내역을 상세히 담습니다.
 	 */
 	@ExceptionHandler(BindException.class)
-	public ResponseEntity<ErrorResponse> handleValidationException(BindException e) {
+	public ResponseEntity<ErrorResponse> handleValidationException(HttpServletRequest request, BindException e) {
 		List<FieldErrorResponse> fieldErrors = e.getBindingResult().getFieldErrors().stream()
 			.map(FieldErrorResponse::new).toList();
-
+		printWarnLog(request, "DTO/ModelAttribute 검증 실패");
 		return buildValidationFailResponseEntity(fieldErrors);
 	}
 
@@ -69,10 +73,11 @@ public class GlobalExceptionHandler {
 	 * {@link ErrorResponse}를 생성할 때 필드별 에러 내역을 상세히 담습니다.
 	 */
 	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity<ErrorResponse> handleQueryValidationException(ConstraintViolationException e) {
+	public ResponseEntity<ErrorResponse> handleQueryValidationException(HttpServletRequest request,
+		ConstraintViolationException e) {
 		List<FieldErrorResponse> fieldErrors = e.getConstraintViolations().stream()
 			.map(FieldErrorResponse::new).toList();
-
+		printWarnLog(request, "쿼리/경로변수 검증 실패");
 		return buildValidationFailResponseEntity(fieldErrors);
 	}
 
@@ -83,7 +88,8 @@ public class GlobalExceptionHandler {
 	 */
 
 	@ExceptionHandler(HandlerMethodValidationException.class)
-	public ResponseEntity<ErrorResponse> handleHandlerMethodValidationException() {
+	public ResponseEntity<ErrorResponse> handleHandlerMethodValidationException(HttpServletRequest request) {
+		printWarnLog(request, "쿼리/경로변수 검증 실패");
 		return buildResponseEntity(REQUEST_VALIDATION_FAILED);
 	}
 
@@ -97,7 +103,8 @@ public class GlobalExceptionHandler {
 	 * @param e 비즈니스 예외에서 공통으로 사용되는 커스텀 예외
 	 */
 	@ExceptionHandler(CustomException.class)
-	public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
+	public ResponseEntity<ErrorResponse> handleCustomException(HttpServletRequest request, CustomException e) {
+		printWarnLog(request, e.getErrorCode().getCode());
 		return buildResponseEntity(e.getErrorCode());
 	}
 
@@ -107,7 +114,8 @@ public class GlobalExceptionHandler {
 	 * <p>{@link ErrorCode#REQUEST_URL_INVALID}와 대응됩니다.
 	 */
 	@ExceptionHandler(NoResourceFoundException.class)
-	public ResponseEntity<ErrorResponse> handleNoResourceFoundException() {
+	public ResponseEntity<ErrorResponse> handleNoResourceFoundException(HttpServletRequest request) {
+		printWarnLog(request, "URL Not Found");
 		return buildResponseEntity(REQUEST_URL_INVALID);
 	}
 
@@ -117,7 +125,8 @@ public class GlobalExceptionHandler {
 	 * <p>{@link ErrorCode#REQUEST_METHOD_INVALID}와 대응됩니다.
 	 */
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException() {
+	public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpServletRequest request) {
+		printWarnLog(request, "Method Not Allowed");
 		return buildResponseEntity(REQUEST_METHOD_INVALID);
 	}
 
@@ -129,7 +138,8 @@ public class GlobalExceptionHandler {
 	 * <br>409로 응답하지만 서버측 오류일 가능성이 있기에 log.error를 남깁니다.
 	 */
 	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException() {
+	public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(Exception e) {
+		log.error("DB 무결성 위반", e);
 		return buildResponseEntity(DB_CONFLICT);
 	}
 
@@ -140,7 +150,8 @@ public class GlobalExceptionHandler {
 	 * {@link ErrorCode#SERVER_ERROR}와 대응됩니다.
 	 */
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleAllException() {
+	public ResponseEntity<ErrorResponse> handleAllException(Exception e) {
+		log.error("서버 오류", e);
 		return buildResponseEntity(SERVER_ERROR);
 	}
 
@@ -164,5 +175,9 @@ public class GlobalExceptionHandler {
 	private ResponseEntity<ErrorResponse> buildValidationFailResponseEntity(List<FieldErrorResponse> fieldErrors) {
 		return ResponseEntity.status(REQUEST_VALIDATION_FAILED.getStatus())
 			.body(new ErrorResponse(REQUEST_VALIDATION_FAILED, fieldErrors));
+	}
+
+	private void printWarnLog(HttpServletRequest request, String str) {
+		log.warn("{} {} {}", request.getMethod(), request.getRequestURI(), str);
 	}
 }
