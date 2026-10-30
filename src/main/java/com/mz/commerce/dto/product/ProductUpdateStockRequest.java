@@ -8,5 +8,5 @@ import lombok.Getter;
 public class ProductUpdateStockRequest {
 	@NotNull(message = "재고 수량은 필수입니다.")
 	@PositiveOrZero(message = "재고 수량은 0 이상이어야 합니다.")
-	private int stock;
+	private Integer stock;
 }

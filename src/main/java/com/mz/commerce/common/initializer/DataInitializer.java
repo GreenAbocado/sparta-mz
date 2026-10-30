@@ -3,6 +3,7 @@ package com.mz.commerce.common.initializer;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.mz.commerce.entity.admin.Admin;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
+	private final PasswordEncoder passwordEncoder;
 	private final AdminRepository adminRepository;
 	private final ProductRepository productRepository;
 	private final CustomerRepository customerRepository;
@@ -43,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
 		Admin superAdmin = new Admin(
 			"superadmin",
 			"superadmin@super.com",
-			"admin123",
+			passwordEncoder.encode("admin123"),
 			"010-1234-5678",
 			AdminStatus.ACTIVE,
 			AdminRole.SUPER
