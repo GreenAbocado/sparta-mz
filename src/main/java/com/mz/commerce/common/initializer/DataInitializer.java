@@ -14,7 +14,6 @@ import com.mz.commerce.entity.customer.CustomerStatus;
 import com.mz.commerce.entity.order.Order;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.entity.product.ProductCategory;
-import com.mz.commerce.entity.product.ProductStatus;
 import com.mz.commerce.repository.AdminRepository;
 import com.mz.commerce.repository.OrderRepository;
 import com.mz.commerce.repository.ProductRepository;
@@ -31,7 +30,6 @@ public class DataInitializer implements CommandLineRunner {
 	private final ProductRepository productRepository;
 	private final CustomerRepository customerRepository;
 	private final OrderRepository orderRepository;
-	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	public void run(String... args) {
@@ -85,10 +83,9 @@ public class DataInitializer implements CommandLineRunner {
 	private void initializeProducts() {
 		Admin admin = adminRepository.findById(1L).orElseThrow();
 
-		Product product1 = new Product(admin, "상품1", ProductCategory.ELECTRONICS, 1000L, 10, ProductStatus.ON_SALE);
-		Product product2 = new Product(admin, "상품2", ProductCategory.ELECTRONICS, 50L, 10,
-			ProductStatus.ON_SALE);
-		Product product3 = new Product(admin, "상품3", ProductCategory.ELECTRONICS, 10L, 10, ProductStatus.ON_SALE);
+		Product product1 = new Product(admin, "상품1", ProductCategory.ELECTRONICS, 1000L, 10, true);
+		Product product2 = new Product(admin, "상품2", ProductCategory.ELECTRONICS, 50L, 10, true);
+		Product product3 = new Product(admin, "상품3", ProductCategory.ELECTRONICS, 10L, 10, true);
 
 		productRepository.save(product1);
 		productRepository.save(product2);
