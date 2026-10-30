@@ -28,7 +28,7 @@ public enum ErrorCode {
 	AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "G005", "인증에 실패하였습니다."),
 	SESSION_INVALIDATED(HttpStatus.CONFLICT, "G006", "세션이 강제 만료되었습니다. 다시 로그인 해주세요."),
 	AUTHORIZED_FORBIDDEN(HttpStatus.FORBIDDEN, "G007", "관리자 인가에 실패하였습니다."),
-
+	SORT_ORDER_INVALID(HttpStatus.BAD_REQUEST, "G008", "정렬 순서는 asc 또는 desc만 가능합니다."),
 	SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G500", "서버 내부 오류입니다."),
 
 	// 관리자
