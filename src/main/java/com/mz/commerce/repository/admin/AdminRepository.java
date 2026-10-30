@@ -16,4 +16,6 @@ public interface AdminRepository
 	boolean existsByEmail(String email);
 
 	boolean existsByIdAndRoleAndDeletedIsNull(Long id, AdminRole role);
+
+	Optional<Admin> findByIdAndDeletedIsNull(Long id);
 }
