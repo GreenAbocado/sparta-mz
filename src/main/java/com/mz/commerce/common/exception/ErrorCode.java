@@ -53,6 +53,7 @@ public enum ErrorCode {
 	INVALID_SORT_FIELD(HttpStatus.BAD_REQUEST, "A019", "지원하지 않는 정렬 필드입니다."),
 	INVALID_SORT_ORDER(HttpStatus.BAD_REQUEST, "A020", "정렬 순서는 asc 또는 desc여야 합니다."),
 	INVALID_ADMIN_ROLE(HttpStatus.BAD_REQUEST, "A021", "슈퍼 관리자로는 가입할 수 없습니다."),
+	SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "A022", "이전과 동일한 비밀번호는 사용할 수 없습니다"),
 	// 고객
 	CUSTOMER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "G009", "유효하지 않은 상태입니다. (ACTIVE, INACTIVE, SUSPENDED)"),
 	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",

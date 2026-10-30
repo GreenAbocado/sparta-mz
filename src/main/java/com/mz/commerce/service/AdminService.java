@@ -272,8 +272,14 @@ public class AdminService {
 		Admin admin = adminRepository.findById(adminId).orElseThrow(
 			() -> new CustomException(ErrorCode.ADMIN_NOT_FOUND)
 		);
+		if (request.getNewPassword().length() < 8) {
+			throw new CustomException(ErrorCode.WEAK_PASSWORD);
+		}
 		if (!passwordEncoder.matches(request.getCurrentPassword(), admin.getPassword())) {
 			throw new CustomException(ErrorCode.INVALID_PASSWORD);
+		}
+		if (passwordEncoder.matches(request.getNewPassword(), admin.getPassword())) {
+			throw new CustomException(ErrorCode.SAME_AS_OLD_PASSWORD); // 예시 에러 코드
 		}
 		String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
 		admin.updatePassword(encodedNewPassword);
