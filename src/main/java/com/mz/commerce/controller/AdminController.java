@@ -1,4 +1,4 @@
-package com.mz.commerce.controller.admin;
+package com.mz.commerce.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ import com.mz.commerce.dto.admin.AdminUpdateResponse;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
-import com.mz.commerce.service.admin.AdminService;
+import com.mz.commerce.service.AdminService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

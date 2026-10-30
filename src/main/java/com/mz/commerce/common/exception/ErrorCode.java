@@ -72,8 +72,13 @@ public enum ErrorCode {
 	PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "P006", "해당 ID의 상품을 찾을 수 없습니다."),
 	PRODUCT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "P007", "상품 관리 권한이 없습니다."),
 
+	PRODUCT_STATUS_NOT_ORDERABLE(HttpStatus.CONFLICT, "P008", "현재 상품 상태로는 주문할 수 없습니다,"),
+	PRODUCT_OUT_OF_STOCK(HttpStatus.CONFLICT, "P009", "상품 재고가 부족합니다."),
+
 	// 주문
-	;
+	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "주문을 찾을 수 없습니다."),
+	ORDER_STATUS_NOT_CHANGEABLE(HttpStatus.CONFLICT, "O002", "배송이 완료되거나 취소된 경우 상태를 변경할 수 없습니다."),
+	ORDER_STATUS_NOT_CANCEL(HttpStatus.CONFLICT, "O003", "주문이 준비 중일 경우에만 취소가 가능합니다.");
 
 	/** HTTP 응답 상태 코드 */
 	private final HttpStatus status;

@@ -1,7 +1,10 @@
 package com.mz.commerce.entity.product;
 
+import static com.mz.commerce.common.exception.ErrorCode.*;
+
 import java.time.LocalDateTime;
 
+import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.entity.BaseEntity;
 import com.mz.commerce.entity.admin.Admin;
 
@@ -102,6 +105,25 @@ public class Product extends BaseEntity {
 			this.status = this.stock <= 0
 				? ProductStatus.SOLD_OUT
 				: ProductStatus.ON_SALE;
+		}
+	}
+
+	public void decreaseStock(int amount) {
+		if (stock < amount) {
+			throw new CustomException(PRODUCT_OUT_OF_STOCK);
+		}
+		stock -= amount;
+
+		if (stock == 0) {
+			status = ProductStatus.SOLD_OUT;
+		}
+	}
+
+	public void increaseStock(int amount) {
+		stock += amount;
+
+		if (status != ProductStatus.DISCONTINUED) {
+			status = ProductStatus.ON_SALE;
 		}
 	}
 }

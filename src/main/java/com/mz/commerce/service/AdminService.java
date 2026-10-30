@@ -1,4 +1,4 @@
-package com.mz.commerce.service.admin;
+package com.mz.commerce.service;
 
 import java.util.Locale;
 import java.util.Set;
@@ -30,7 +30,7 @@ import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
-import com.mz.commerce.repository.admin.AdminRepository;
+import com.mz.commerce.repository.AdminRepository;
 
 import lombok.RequiredArgsConstructor;
 

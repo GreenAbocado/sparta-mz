@@ -19,7 +19,7 @@ import com.mz.commerce.dto.customer.CustomerResponse;
 import com.mz.commerce.dto.customer.CustomerUpdateRequest;
 import com.mz.commerce.dto.customer.CustomerUpdateStatusRequest;
 import com.mz.commerce.entity.admin.AdminRole;
-import com.mz.commerce.service.customer.CustomerService;
+import com.mz.commerce.service.CustomerService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;

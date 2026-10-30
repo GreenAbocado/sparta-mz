@@ -1,4 +1,4 @@
-package com.mz.commerce.service.customer;
+package com.mz.commerce.service;
 
 import java.util.Locale;
 import java.util.Set;
