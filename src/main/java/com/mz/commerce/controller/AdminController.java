@@ -98,6 +98,7 @@ public class AdminController {
 		return ResponseEntity.ok(adminService.getProfile(sessionUser.getId()));
 	}
 
+	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}")
 	public ResponseEntity<AdminUpdateResponse> updateAdmin(
 		@PathVariable Long id,
