@@ -296,6 +296,9 @@ public class AdminService {
 		Admin admin = adminRepository.findById(adminId).orElseThrow(
 			() -> new CustomException(ErrorCode.ADMIN_NOT_FOUND)
 		);
+		if (passwordEncoder.matches(request.getNewPassword(), admin.getPassword())) {
+			throw new CustomException(ErrorCode.SAME_AS_OLD_PASSWORD);
+		}
 		if (!passwordEncoder.matches(request.getCurrentPassword(), admin.getPassword())) {
 			throw new CustomException(ErrorCode.INVALID_PASSWORD);
 		}
