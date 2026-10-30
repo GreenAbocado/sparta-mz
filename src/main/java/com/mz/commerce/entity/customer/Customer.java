@@ -1,7 +1,10 @@
 package com.mz.commerce.entity.customer;
 
+import static com.mz.commerce.common.exception.ErrorCode.*;
+
 import java.time.LocalDateTime;
 
+import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -63,5 +66,11 @@ public class Customer extends BaseEntity {
 
 	public void updateStatus(CustomerStatus status) {
 		this.status = status;
+	}
+
+	public void validateActive() {
+		if (this.status != CustomerStatus.ACTIVE) {
+			throw new CustomException(CUSTOMER_STATUS_INVALID);
+		}
 	}
 }

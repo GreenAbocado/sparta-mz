@@ -17,11 +17,13 @@ import com.mz.commerce.dto.order.OrderDetailResponse;
 import com.mz.commerce.dto.order.OrderSearchRequest;
 import com.mz.commerce.dto.order.OrderSummaryResponse;
 import com.mz.commerce.entity.admin.Admin;
+import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.order.Order;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.repository.AdminRepository;
 import com.mz.commerce.repository.OrderRepository;
 import com.mz.commerce.repository.ProductRepository;
+import com.mz.commerce.repository.customer.CustomerRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +33,7 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final ProductRepository productRepository;
 	private final AdminRepository adminRepository;
-	// customerRepository
+	private final CustomerRepository customerRepository;
 	private static final Random RANDOM = new Random();
 
 	// 주문 번호 UK 중복으로 DB 예외 가능
@@ -43,14 +45,17 @@ public class OrderService {
 		Product product = productRepository.findByIdAndDeletedIsNull(request.getProductId())
 			.orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
 
-		// Customer customer = 레포지토리 -> 예외
+		Customer customer = customerRepository.findByIdAndDeletedIsNull(request.getCustomerId())
+			.orElseThrow(()-> new CustomException(CUSTOMER_NOT_FOUND));
+
+		customer.validateActive();
 
 		// ProductStatus에서 상태, Product에서 재고 확인 후 차감 (예외 던짐)
 		product.getStatus().validateOrderable();
 		product.decreaseStock(request.getQuantity());
 
 		Order order =
-			orderRepository.save(new Order(admin, product, makeOrderNo(), request.getQuantity()));
+			orderRepository.save(new Order(customer, admin, product, makeOrderNo(), request.getQuantity()));
 		return new OrderSummaryResponse(order);
 	}
 

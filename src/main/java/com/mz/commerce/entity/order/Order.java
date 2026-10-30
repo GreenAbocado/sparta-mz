@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.entity.BaseEntity;
 import com.mz.commerce.entity.admin.Admin;
+import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.product.Product;
 
 import jakarta.persistence.Column;
@@ -33,15 +34,9 @@ public class Order extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	/**
-	 *
-	 *
-	 *
-	 * CUSTOMER 연관 추가 필요
-	 *
-	 * <p>
-	 *
-	 * */
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "customer_id", nullable = false)
+	private Customer customer;
 
 	// nullable인 관계로 optional, nullable true
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -74,8 +69,8 @@ public class Order extends BaseEntity {
 
 	private LocalDateTime deleted;
 
-	public Order( /* customer */Admin createdBy, Product product, String orderNo, int productCount) {
-		// this.customer =
+	public Order(Customer customer, Admin createdBy, Product product, String orderNo, int productCount) {
+		this.customer = customer;
 		this.createdBy = createdBy;
 		this.product = product;
 		this.orderNo = orderNo;

@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderSummaryResponse {
 	private final Long id;
 	private final String orderNo;
-	// private final String customerName;
+	private final String customerName;
 	private final String productName;
 	private final int quantity;
 	private final long totalPrice;
@@ -21,11 +21,11 @@ public class OrderSummaryResponse {
 	private final OrderStatus status;
 	private final String createdByName;
 
-	// 단일 요약 응답에만 사용
+	// 단일 응답에만 사용 (쿼리 3번 추가 발생)
 	public OrderSummaryResponse(Order order) {
 		this.id = order.getId();
 		this.orderNo = order.getOrderNo();
-		// this.customerName = order.getCustomer().
+		this.customerName = order.getCustomer().getName();
 		this.productName = order.getProduct().getName();
 		this.quantity = order.getProductCount();
 		this.totalPrice = order.getTotalPrice();
