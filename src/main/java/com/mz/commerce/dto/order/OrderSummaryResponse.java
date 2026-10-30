@@ -31,6 +31,6 @@ public class OrderSummaryResponse {
 		this.totalPrice = order.getTotalPrice();
 		this.createdAt = order.getCreatedAt();
 		this.status = order.getStatus();
-		this.createdByName = order.getCreatedBy().getName();
+		this.createdByName = (order.getCreatedBy() == null) ? null : order.getCreatedBy().getName();
 	}
 }
