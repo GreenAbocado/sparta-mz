@@ -2,6 +2,8 @@ package com.mz.commerce.entity.admin;
 
 import java.time.LocalDateTime;
 
+import com.mz.commerce.common.exception.CustomException;
+import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -91,13 +93,19 @@ public class Admin extends BaseEntity {
 	}
 
 	public void approve() {
+		validatePending(ErrorCode.ADMIN_APPROVAL_NOT_ALLOWED);
 		this.status = AdminStatus.ACTIVE;
 		this.approvedAt = LocalDateTime.now();
-		this.rejectedAt = null;
-		this.rejectionReason = null;
+		// this.rejectedAt = null;
+		// this.rejectionReason = null;
+		// PENDING에서 처리
 	}
 
 	public void reject(String rejectionReason) {
+		if (rejectionReason == null || rejectionReason.isBlank()) {
+			throw new CustomException(ErrorCode.REJECTION_REASON_REQUIRED);
+		}
+		validatePending(ErrorCode.ADMIN_REJECTION_NOT_ALLOWED);
 		this.status = AdminStatus.REJECTED;
 		this.rejectedAt = LocalDateTime.now();
 		this.rejectionReason = rejectionReason;
@@ -111,4 +119,16 @@ public class Admin extends BaseEntity {
 		this.password = password;
 	}
 
+	private void validatePending(ErrorCode otherwise) {
+		if (this.status == AdminStatus.ACTIVE) {
+			throw new CustomException(ErrorCode.ADMIN_ALREADY_ACTIVE);
+		}
+		if (this.status == AdminStatus.REJECTED) {
+			throw new CustomException(ErrorCode.ADMIN_ALREADY_REJECTED);
+		}
+		if (this.status != AdminStatus.PENDING) {
+			throw new CustomException(otherwise);
+		}
+
+	}
 }
