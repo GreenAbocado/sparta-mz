@@ -76,7 +76,6 @@ public class ProductController {
 	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{productId}")
 	public ResponseEntity<ProductResponse> updateProduct(
-		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
 		@Valid @RequestBody ProductUpdateRequest request
 	) {
@@ -88,7 +87,6 @@ public class ProductController {
 	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{productId}/stock")
 	public ResponseEntity<ProductResponse> updateProductStock(
-		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
 		@Valid @RequestBody ProductUpdateStockRequest request
 	) {
@@ -100,7 +98,6 @@ public class ProductController {
 	@HigherAdmin(AdminRole.OPERATION)
 	@PatchMapping("/{productId}/status")
 	public ResponseEntity<ProductResponse> updateProductStatus(
-		@Login SessionUser sessionUser,
 		@PathVariable Long productId,
 		@Valid @RequestBody ProductUpdateStatusRequest request
 	) {
@@ -112,10 +109,9 @@ public class ProductController {
 	@HigherAdmin(AdminRole.OPERATION)
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<ProductDeleteResponse> deleteProduct(
-		@Login SessionUser sessionUser,
 		@PathVariable Long productId
 	) {
-		ProductDeleteResponse response = productService.deleteProduct(productId);
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(productService.deleteProduct(productId));
 	}
+
 }
