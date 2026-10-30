@@ -283,6 +283,10 @@ public class AdminService {
 		Admin admin = adminRepository.findById(id).orElseThrow(
 			() -> new CustomException(ErrorCode.ADMIN_NOT_FOUND)
 		);
+		if (!admin.getEmail().equals(request.getEmail())
+			&& adminRepository.existsByEmail(request.getEmail())) {
+			throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+		}
 		admin.update(request.getName(), request.getEmail(), request.getPhone());
 		return new AdminResponse(admin);
 	}
@@ -292,6 +296,9 @@ public class AdminService {
 		Admin admin = adminRepository.findById(adminId).orElseThrow(
 			() -> new CustomException(ErrorCode.ADMIN_NOT_FOUND)
 		);
+		if (passwordEncoder.matches(request.getNewPassword(), admin.getPassword())) {
+			throw new CustomException(ErrorCode.SAME_AS_OLD_PASSWORD);
+		}
 		if (!passwordEncoder.matches(request.getCurrentPassword(), admin.getPassword())) {
 			throw new CustomException(ErrorCode.INVALID_PASSWORD);
 		}
