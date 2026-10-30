@@ -31,7 +31,7 @@ public enum ErrorCode {
 
 	SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G500", "서버 내부 오류입니다."),
 
-	// 회원
+	// 관리자
 	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
 	EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "존재하지 않는 이메일입니다."),
 	INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "A003", "이메일 또는 비밀번호가 일치하지 않습니다."),
@@ -49,6 +49,13 @@ public enum ErrorCode {
 	ADMIN_PENDING(HttpStatus.FORBIDDEN, "A015", "관리자가 '승인 대기' 상태입니다."),
 	ADMIN_SUSPENDED(HttpStatus.FORBIDDEN, "A016", "관리자가 '정지' 상태입니다."),
 	WRONG_ACCESS(HttpStatus.BAD_REQUEST, "A017", "잘못된 접근입니다"),
+
+	// 고객
+	CUSTOMER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "G009", "유효하지 않은 상태입니다. (ACTIVE, INACTIVE, SUSPENDED)"),
+	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",
+		"지원하지 않는 정렬 기준입니다. (id, name, email, phone, status, createdAt, modifiedAt)"),
+	CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "C003", "해당 ID의 고객 정보를 찾을 수 없습니다."),
+
 	// 상품
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
 		"상품 카테고리가 올바르지 않습니다. (사용 가능한 카테고리: ELECTRONICS, CLOTHING, FOOD)"),
