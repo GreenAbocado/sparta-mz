@@ -9,10 +9,11 @@ import org.springframework.stereotype.Component;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
-import com.mz.commerce.repository.AdminRepository;
-import com.mz.commerce.repository.ProductRepository;
 import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.customer.CustomerStatus;
+import com.mz.commerce.repository.AdminRepository;
+import com.mz.commerce.repository.OrderRepository;
+import com.mz.commerce.repository.ProductRepository;
 import com.mz.commerce.repository.customer.CustomerRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,8 @@ public class DataInitializer implements CommandLineRunner {
 	private final AdminRepository adminRepository;
 	private final ProductRepository productRepository;
 	private final CustomerRepository customerRepository;
-	//private final OrderRepository orderRepository;
+	private final OrderRepository orderRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	public void run(String... args) {
