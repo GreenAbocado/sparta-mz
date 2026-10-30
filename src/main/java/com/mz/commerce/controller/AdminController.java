@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.common.authentication.Login;
+import com.mz.commerce.common.authentication.RequiredRole;
 import com.mz.commerce.common.authentication.SessionConst;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.admin.AdminLoginRequest;
@@ -73,7 +73,7 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 
-	@HigherAdmin(AdminRole.SUPER)
+	@RequiredRole(AdminRole.SUPER)
 	@GetMapping("/admins")
 	public ResponseEntity<PageResponse<AdminResponse>> getAllAdmins(
 		@RequestParam(required = false) String keyword,
@@ -87,7 +87,7 @@ public class AdminController {
 		return ResponseEntity.ok(adminService.getAll(keyword, page, size, sortBy, sortOrder, role, status));
 	}
 
-	@HigherAdmin(AdminRole.SUPER)
+	@RequiredRole(AdminRole.SUPER)
 	@GetMapping("/admins/{id}")
 	public ResponseEntity<AdminResponse> getAdminById(@PathVariable Long id) {
 		return ResponseEntity.ok(adminService.getOne(id));
@@ -108,7 +108,7 @@ public class AdminController {
 		return ResponseEntity.ok(adminService.updateAdmin(sessionUser.getId(), id, request));
 	}
 
-	@HigherAdmin(AdminRole.SUPER)
+	@RequiredRole(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/status")
 	public ResponseEntity<AdminStatusUpdateResponse> updateStatusAdmin(
 		@Login SessionUser sessionUser,
@@ -118,7 +118,7 @@ public class AdminController {
 		return ResponseEntity.ok(adminService.updateAdminStatus(sessionUser.getId(), id, request));
 	}
 
-	@HigherAdmin(AdminRole.SUPER)
+	@RequiredRole(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/role")
 	public ResponseEntity<AdminRoleUpdateResponse> updateRoleAdmin(
 		@Login SessionUser sessionUser,
@@ -128,13 +128,13 @@ public class AdminController {
 		return ResponseEntity.ok(adminService.updateAdminRole(sessionUser.getId(), id, request));
 	}
 
-	@HigherAdmin(AdminRole.SUPER)
+	@RequiredRole(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/approve")
 	public ResponseEntity<AdminResponse> approveAdmin(@Login SessionUser sessionUser, @PathVariable Long id) {
 		return ResponseEntity.ok(adminService.approveAdmin(sessionUser.getId(), id));
 	}
 
-	@HigherAdmin(AdminRole.SUPER)
+	@RequiredRole(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/reject")
 	public ResponseEntity<AdminResponse> rejectAdmin(
 		@Login SessionUser sessionUser,
@@ -144,7 +144,7 @@ public class AdminController {
 		return ResponseEntity.ok(adminService.rejectAdmin(sessionUser.getId(), id, request.getRejectionReason()));
 	}
 
-	@HigherAdmin(AdminRole.SUPER)
+	@RequiredRole(AdminRole.SUPER)
 	@DeleteMapping("/admins/{id}")
 	public ResponseEntity<Void> deleteAdmin(@Login SessionUser sessionUser, @PathVariable Long id) {
 		adminService.adminDelete(sessionUser.getId(), id);
