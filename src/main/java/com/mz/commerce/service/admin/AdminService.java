@@ -12,11 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mz.commerce.common.authentication.SessionConst;
-import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.dto.admin.AdminLoginRequest;
+import com.mz.commerce.dto.admin.AdminLoginResponse;
 import com.mz.commerce.dto.admin.AdminPasswordUpdateRequest;
 import com.mz.commerce.dto.admin.AdminRegisterRequest;
 import com.mz.commerce.dto.admin.AdminRegisterResponse;
@@ -33,7 +32,6 @@ import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
 import com.mz.commerce.repository.admin.AdminRepository;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -51,6 +49,9 @@ public class AdminService {
 		if (adminRepository.existsByEmail(request.getEmail())) {
 			throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
 		}
+		if (request.getPassword().length() < 8) {
+			throw new CustomException(ErrorCode.WEAK_PASSWORD);
+		}
 
 		if (request.getRole() == AdminRole.SUPER) {
 			throw new CustomException(ErrorCode.INVALID_ADMIN_ROLE);
@@ -59,7 +60,7 @@ public class AdminService {
 		Admin admin = new Admin(
 			request.getName(),
 			request.getEmail(),
-			request.getPassword(),
+			passwordEncoder.encode(request.getPassword()),
 			request.getPhone(),
 			AdminStatus.PENDING,
 			//AdminRole.OPERATION
@@ -71,23 +72,33 @@ public class AdminService {
 
 	// 로그인: 인증된 관리자 정보를 세션에 저장
 	@Transactional(readOnly = true)
-	public SessionUser login(AdminLoginRequest request, HttpSession session) {
+	public AdminLoginResponse login(AdminLoginRequest request) {
 		Admin admin = adminRepository.findByEmail(request.getEmail())
-			.orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGIN));
 
-		if (!admin.getPassword().equals(request.getPassword())) {
-			throw new CustomException(ErrorCode.INVALID_PASSWORD);
+		if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
+			throw new CustomException(ErrorCode.INVALID_LOGIN);
 		}
 
-		if (admin.getStatus() != AdminStatus.ACTIVE) {
-			throw new CustomException(ErrorCode.ADMIN_NOT_ACTIVE);
+		if (admin.getDeleted() != null) {
+			throw new CustomException(ErrorCode.ADMIN_NOT_FOUND);
 		}
 
-		SessionUser sessionUser =
-			new SessionUser(admin.getId(), admin.getRole());
+		switch (admin.getStatus()) {
+			case ACTIVE:
+				return new AdminLoginResponse(admin.getId(), admin.getRole());
+			case PENDING:
+				throw new CustomException(ErrorCode.ADMIN_PENDING);
+			case REJECTED:
+				throw new CustomException(ErrorCode.ADMIN_REJECTED);
+			case SUSPENDED:
+				throw new CustomException(ErrorCode.ADMIN_SUSPENDED);
+			case INACTIVE:
+				throw new CustomException(ErrorCode.ADMIN_INACTIVE);
+			default:
+				throw new CustomException(ErrorCode.WRONG_ACCESS);
+		}
 
-		session.setAttribute(SessionConst.SESSION_USER, sessionUser);
-		return sessionUser;
 	}
 
 	// 관리자 목록: 검색, 필터, 정렬, 페이지네이션

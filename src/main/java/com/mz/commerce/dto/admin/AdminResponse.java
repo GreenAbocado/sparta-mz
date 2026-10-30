@@ -18,9 +18,9 @@ public class AdminResponse {
 	private String phone;
 	private AdminStatus status;
 	private AdminRole role;
+	private LocalDateTime createdAt;
 	private LocalDateTime approvedAt;
 	private LocalDateTime rejectedAt;
-	private LocalDateTime createdAt;
 	private String rejectionReason;
 
 	public AdminResponse(Admin admin) {
@@ -30,9 +30,9 @@ public class AdminResponse {
 		this.phone = admin.getPhone();
 		this.status = admin.getStatus();
 		this.role = admin.getRole();
+		this.createdAt = admin.getCreatedAt();
 		this.approvedAt = admin.getApprovedAt();
 		this.rejectedAt = admin.getRejectedAt();
-		this.createdAt = admin.getCreatedAt();
 		this.rejectionReason = admin.getRejectionReason();
 	}
 }
