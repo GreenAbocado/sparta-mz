@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mz.commerce.common.authentication.HigherAdmin;
 import com.mz.commerce.common.authentication.Login;
+import com.mz.commerce.common.authentication.RequiredRole;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.dto.product.ProductDeleteResponse;
@@ -38,8 +38,8 @@ public class ProductController {
 
 	private final ProductService productService;
 
-	//상품 등록 (OP 관리자 이상)
-	@HigherAdmin(AdminRole.OPERATION)
+	//상품 등록 (OP 관리자, SUPER 관리자)
+	@RequiredRole({AdminRole.SUPER, AdminRole.OPERATION})
 	@PostMapping
 	public ResponseEntity<ProductResponse> registerProduct(
 		@Login SessionUser sessionUser,
@@ -72,8 +72,8 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(productId));
 	}
 
-	//상품 정보 수정 (상품명, 카테고리, 가격) (OP 관리자 이상)
-	@HigherAdmin(AdminRole.OPERATION)
+	//상품 정보 수정 (상품명, 카테고리, 가격) (OP 관리자, 슈퍼 관리자)
+	@RequiredRole({AdminRole.SUPER, AdminRole.OPERATION})
 	@PatchMapping("/{productId}")
 	public ResponseEntity<ProductResponse> updateProduct(
 		@PathVariable Long productId,
@@ -83,8 +83,8 @@ public class ProductController {
 			.body(productService.updateProduct(productId, request));
 	}
 
-	//상품 재고 변경 (OP 관리자 이상)
-	@HigherAdmin(AdminRole.OPERATION)
+	//상품 재고 변경 (OP 관리자, 슈퍼 관리자)
+	@RequiredRole({AdminRole.SUPER, AdminRole.OPERATION})
 	@PatchMapping("/{productId}/stock")
 	public ResponseEntity<ProductResponse> updateProductStock(
 		@PathVariable Long productId,
@@ -94,8 +94,8 @@ public class ProductController {
 			.body(productService.updateProductStock(productId, request));
 	}
 
-	//상품 상태 변경 (OP 관리자 이상)
-	@HigherAdmin(AdminRole.OPERATION)
+	//상품 상태 변경 (OP 관리자, 슈퍼 관리자)
+	@RequiredRole({AdminRole.SUPER, AdminRole.OPERATION})
 	@PatchMapping("/{productId}/status")
 	public ResponseEntity<ProductResponse> updateProductStatus(
 		@PathVariable Long productId,
@@ -105,13 +105,12 @@ public class ProductController {
 			.body(productService.updateProductStatus(productId, request));
 	}
 
-	// 상품 삭제 (OP 관리자 이상)
-	@HigherAdmin(AdminRole.OPERATION)
+	// 상품 삭제 (OP 관리자, 슈퍼 관리자)
+	@RequiredRole({AdminRole.SUPER, AdminRole.OPERATION})
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<ProductDeleteResponse> deleteProduct(
 		@PathVariable Long productId
 	) {
 		return ResponseEntity.ok(productService.deleteProduct(productId));
 	}
-
 }

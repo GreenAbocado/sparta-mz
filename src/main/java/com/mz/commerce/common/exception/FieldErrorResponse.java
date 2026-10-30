@@ -16,16 +16,18 @@ public class FieldErrorResponse {
 	private final String message;
 
 	/**
-	 * DTO 검증 실패 시 FieldErrorResponse를 생성합니다.
+	 * DTO 검증, ModelAttribute 바인딩/검증 실패 시 FieldErrorResponse를 생성합니다.
 	 *
 	 * <p>{@link GlobalExceptionHandler#handleValidationException}에서
-	 * MethodArgumentNotValidException을 잡아 BindingResult에서 꺼낸 FieldError를 변환합니다.
+	 * BindException을 잡아 BindingResult에서 꺼낸 FieldError를 변환합니다.
 	 *
-	 * @param fieldError BindingResult에서 꺼낸 필드별 검증 실패 정보
+	 * <p>만일 ModelAttribute가 바인딩으로 실패했다면, 오류 메시지를 고정하여 복잡한 메시지가 나가지 않도록 합니다.
+	 *
+	 * @param fieldError BindingResult에서 꺼낸 필드별 바인딩/검증 실패 정보
 	 */
 	public FieldErrorResponse(FieldError fieldError) {
 		this.name = fieldError.getField();
-		this.message = fieldError.getDefaultMessage();
+		this.message = fieldError.isBindingFailure() ? "잘못된 요청입니다." : fieldError.getDefaultMessage();
 	}
 
 	/**

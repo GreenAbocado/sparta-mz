@@ -7,9 +7,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.mz.commerce.common.authentication.AdminInterceptor;
 import com.mz.commerce.common.authentication.AuthenticationInterceptor;
 import com.mz.commerce.common.authentication.LoginArgumentResolver;
-import com.mz.commerce.common.authentication.SuperAdminInterceptor;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,7 +41,7 @@ public class WebConfig implements WebMvcConfigurer {
 			.excludePathPatterns("/admins/register", "/admins/login")
 			.order(1);
 
-		registry.addInterceptor(new SuperAdminInterceptor())
+		registry.addInterceptor(new AdminInterceptor())
 			.addPathPatterns("/**")
 			.order(2);
 	}

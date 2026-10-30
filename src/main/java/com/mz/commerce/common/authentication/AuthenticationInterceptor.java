@@ -56,7 +56,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		}
 
 		SessionUser sessionUser = (SessionUser)session.getAttribute(SESSION_USER);
-		if (!adminRepository.existsByIdAndRoleAndDeletedIsNull(sessionUser.getId(), sessionUser.getRole())) {
+		if (!adminRepository.existsActiveByIdAndRole(sessionUser.getId(), sessionUser.getRole())) {
 			session.invalidate();
 			Cookie cookie = new Cookie(JSESSIONID, null);
 			cookie.setMaxAge(0);
