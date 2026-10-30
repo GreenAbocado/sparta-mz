@@ -35,10 +35,10 @@ public class OrderService {
 	// 주문 번호 UK 중복으로 DB 예외 가능
 	@Transactional
 	public OrderSummaryResponse createOrder(OrderCreateRequest request, Long sessionId) {
-		Admin admin = adminRepository.findById(sessionId)
+		Admin admin = adminRepository.findByIdAndDeletedIsNull(sessionId)
 			.orElseThrow(() -> new CustomException(ADMIN_NOT_FOUND));
 
-		Product product = productRepository.findById(request.getProductId())
+		Product product = productRepository.findByIdAndDeletedIsNull(request.getProductId())
 			.orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
 
 		// Customer customer = 레포지토리 -> 예외
@@ -52,6 +52,7 @@ public class OrderService {
 		return new OrderSummaryResponse(order);
 	}
 
+	// soft delete 여부 JPQL에서 직접 적용
 	@Transactional(readOnly = true)
 	public OrderDetailResponse getOrder(Long orderId) {
 		return orderRepository.findByOrderIdInDto(orderId)
@@ -73,7 +74,7 @@ public class OrderService {
 	}
 
 	private Order getOrderById(Long id) {
-		return orderRepository.findById(id)
+		return orderRepository.findByIdAndDeletedIsNull(id)
 			.orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 	}
 
