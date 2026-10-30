@@ -33,12 +33,12 @@ public class Admin extends BaseEntity {
 
 	@Column(nullable = false, unique = true, length = 100)
 	private String email;
-	
+
 	@Column(nullable = false, length = 255)
 	private String password;
 
 	@Column(nullable = false, length = 13)
-	@Pattern(regexp = "^010-\\\\d{4}-\\\\d{4}$", message = "올바른 전화번호 형식이 아닙니다.")
+	@Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "올바른 전화번호 형식이 아닙니다.")
 	private String phone;
 
 	@Enumerated(EnumType.STRING)
