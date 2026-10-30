@@ -21,9 +21,9 @@ import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.order.Order;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.repository.AdminRepository;
+import com.mz.commerce.repository.CustomerRepository;
 import com.mz.commerce.repository.OrderRepository;
 import com.mz.commerce.repository.ProductRepository;
-import com.mz.commerce.repository.customer.CustomerRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,7 +46,7 @@ public class OrderService {
 			.orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
 
 		Customer customer = customerRepository.findByIdAndDeletedIsNull(request.getCustomerId())
-			.orElseThrow(()-> new CustomException(CUSTOMER_NOT_FOUND));
+			.orElseThrow(() -> new CustomException(CUSTOMER_NOT_FOUND));
 
 		customer.validateActive();
 

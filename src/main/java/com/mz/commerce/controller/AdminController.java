@@ -98,51 +98,56 @@ public class AdminController {
 		return ResponseEntity.ok(adminService.getProfile(sessionUser.getId()));
 	}
 
+	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}")
 	public ResponseEntity<AdminUpdateResponse> updateAdmin(
+		@Login SessionUser sessionUser,
 		@PathVariable Long id,
 		@RequestBody @Valid AdminUpdateRequest request
 	) {
-		return ResponseEntity.ok(adminService.updateAdmin(id, request));
+		return ResponseEntity.ok(adminService.updateAdmin(sessionUser.getId(), id, request));
 	}
 
 	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/status")
 	public ResponseEntity<AdminStatusUpdateResponse> updateStatusAdmin(
+		@Login SessionUser sessionUser,
 		@PathVariable Long id,
 		@RequestBody @Valid AdminStatusUpdateRequest request
 	) {
-		return ResponseEntity.ok(adminService.updateAdminStatus(id, request));
+		return ResponseEntity.ok(adminService.updateAdminStatus(sessionUser.getId(), id, request));
 	}
 
 	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/role")
 	public ResponseEntity<AdminRoleUpdateResponse> updateRoleAdmin(
+		@Login SessionUser sessionUser,
 		@PathVariable Long id,
 		@RequestBody @Valid AdminRoleUpdateRequest request
 	) {
-		return ResponseEntity.ok(adminService.updateAdminRole(id, request));
+		return ResponseEntity.ok(adminService.updateAdminRole(sessionUser.getId(), id, request));
 	}
 
 	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/approve")
-	public ResponseEntity<AdminResponse> approveAdmin(@PathVariable Long id) {
-		return ResponseEntity.ok(adminService.approveAdmin(id));
+	public ResponseEntity<AdminResponse> approveAdmin(@Login SessionUser sessionUser, @PathVariable Long id) {
+		return ResponseEntity.ok(adminService.approveAdmin(sessionUser.getId(), id));
 	}
 
 	@HigherAdmin(AdminRole.SUPER)
 	@PutMapping("/admins/{id}/reject")
 	public ResponseEntity<AdminResponse> rejectAdmin(
+		@Login SessionUser sessionUser,
 		@PathVariable Long id,
 		@Valid @RequestBody AdminRejectRequest request
 	) {
-		return ResponseEntity.ok(adminService.rejectAdmin(id, request.getRejectionReason()));
+		return ResponseEntity.ok(adminService.rejectAdmin(sessionUser.getId(), id, request.getRejectionReason()));
 	}
 
 	@HigherAdmin(AdminRole.SUPER)
 	@DeleteMapping("/admins/{id}")
-	public ResponseEntity<Void> deleteAdmin(@PathVariable Long id) {
-		adminService.adminDelete(id);
+	public ResponseEntity<Void> deleteAdmin(@Login SessionUser sessionUser, @PathVariable Long id) {
+		adminService.adminDelete(sessionUser.getId(), id);
 		return ResponseEntity.noContent().build();
 	}
 

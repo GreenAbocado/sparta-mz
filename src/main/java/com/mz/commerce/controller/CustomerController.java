@@ -1,4 +1,4 @@
-package com.mz.commerce.controller.customer;
+package com.mz.commerce.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
