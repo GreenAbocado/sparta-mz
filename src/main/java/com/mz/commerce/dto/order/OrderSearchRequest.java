@@ -49,8 +49,8 @@ public class OrderSearchRequest {
 		this.keyword = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
 		this.page = (page == null) ? 1 : page;
 		this.size = (size == null) ? 10 : size;
-		this.sortBy = (sortBy == null) ? "createdAt" : sortBy.trim();
-		this.sortOrder = (sortOrder == null) ? "desc" : sortOrder.trim();
+		this.sortBy = (sortBy == null || sortBy.isBlank()) ? "createdAt" : sortBy.trim();
+		this.sortOrder = (sortOrder == null || sortOrder.isBlank()) ? "desc" : sortOrder.trim();
 		this.status = status;
 	}
 

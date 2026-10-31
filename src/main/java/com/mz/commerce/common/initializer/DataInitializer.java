@@ -14,10 +14,12 @@ import com.mz.commerce.entity.customer.CustomerStatus;
 import com.mz.commerce.entity.order.Order;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.entity.product.ProductCategory;
+import com.mz.commerce.entity.review.Review;
 import com.mz.commerce.repository.AdminRepository;
 import com.mz.commerce.repository.CustomerRepository;
 import com.mz.commerce.repository.OrderRepository;
 import com.mz.commerce.repository.ProductRepository;
+import com.mz.commerce.repository.ReviewRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +32,7 @@ public class DataInitializer implements CommandLineRunner {
 	private final ProductRepository productRepository;
 	private final CustomerRepository customerRepository;
 	private final OrderRepository orderRepository;
+	private final ReviewRepository reviewRepository;
 
 	@Override
 	public void run(String... args) {
@@ -37,6 +40,7 @@ public class DataInitializer implements CommandLineRunner {
 		initializeCustomers();
 		initializeProducts();
 		initializeOrders();
+		initializeReviews();
 	}
 
 	private void initializeAdmins() {
@@ -107,7 +111,6 @@ public class DataInitializer implements CommandLineRunner {
 			return;
 		}
 
-		// 고객 초기 데이터
 		Customer customer1 = new Customer("김민준", "minjun.kim@gmail.com", "010-1234-5678", CustomerStatus.ACTIVE);
 		Customer customer2 = new Customer("이서연", "seoyeon.lee@gmail.com", "010-2345-6789", CustomerStatus.ACTIVE);
 		Customer customer3 = new Customer("박지훈", "jihoon.park@gmail.com", "010-3456-7890", CustomerStatus.ACTIVE);
@@ -140,6 +143,7 @@ public class DataInitializer implements CommandLineRunner {
 	private void initializeOrders() {
 		Customer customer = customerRepository.findById(1L).orElseThrow();
 		Customer customer2 = customerRepository.findById(2L).orElseThrow();
+		Customer customer3 = customerRepository.findById(3L).orElseThrow();
 
 		Admin admin = adminRepository.findById(1L).orElseThrow();
 		Product product = productRepository.findById(1L).orElseThrow();
@@ -152,7 +156,42 @@ public class DataInitializer implements CommandLineRunner {
 		Order order4 = new Order(customer2, admin, product, "260110-124921", 40);
 		Order order5 = new Order(customer2, admin, product, "260110-124942", 40);
 
-		orderRepository.saveAll(List.of(order, order2, order3, order4, order5));
-		// 주문 초기 데이터
+		// ================================== 배송완로된 주문 ======================================
+		Order order6 = new Order(customer3, admin, product2, "261031-103821", 3);
+		Order order7 = new Order(customer3, admin, product3, "261031-114532", 7);
+		Order order8 = new Order(customer2, admin, product2, "261031-125641", 15);
+		Order order9 = new Order(customer, admin, product3, "261031-142813", 2);
+		Order order10 = new Order(customer2, admin, product, "261031-163924", 8);
+
+		List<Order> completedOrders = List.of(order6, order7, order8, order9, order10);
+
+		completedOrders.forEach(o -> {
+			o.updateStatus(); // PREPARING → SHIPPING
+			o.updateStatus(); // SHIPPING → COMPLETED
+		});
+		// ========================================================================================
+
+		orderRepository.saveAll(
+			List.of(order, order2, order3, order4, order5, order6, order7, order8, order9, order10));
 	}
+
+	private void initializeReviews() {
+		Order order6 = orderRepository.findById(6L).orElseThrow();
+		Order order7 = orderRepository.findById(7L).orElseThrow();
+		Order order8 = orderRepository.findById(8L).orElseThrow();
+		Order order9 = orderRepository.findById(9L).orElseThrow();
+		Order order10 = orderRepository.findById(10L).orElseThrow();
+
+		// 배송 완료된 주문만 리뷰 작성
+		Review review1 = new Review(order6, 5, "배송도 빠르고 상품도 만족스럽습니다.");
+		Review review2 = new Review(order7, 4, "상품 품질이 좋습니다.");
+		Review review3 = new Review(order8, 5, "기대했던 것보다 훨씬 좋습니다.");
+		Review review4 = new Review(order9, 2, "전체적으로 무난합니다.");
+		Review review5 = new Review(order10, 4, "가격 대비 만족스러운 상품입니다.");
+
+		reviewRepository.saveAll(List.of(
+			review1, review2, review3, review4, review5
+		));
+	}
+
 }

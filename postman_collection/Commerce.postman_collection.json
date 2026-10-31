@@ -769,7 +769,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/orders?page&size&sortBy=createdAt&sortOrder=asc&status",
+              "raw": "{{baseUrl}}/orders?page&size&sortBy=&sortOrder=&status",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -787,11 +787,11 @@
                 },
                 {
                   "key": "sortBy",
-                  "value": "createdAt"
+                  "value": ""
                 },
                 {
                   "key": "sortOrder",
-                  "value": "asc"
+                  "value": ""
                 },
                 {
                   "key": "status",
@@ -862,6 +862,86 @@
                 "orders",
                 "1",
                 "cancel"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Review",
+      "item": [
+        {
+          "name": "Get Reviews List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews?keyword&size&sortBy=&sortOrder=&rating",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": ""
+                },
+                {
+                  "key": "size",
+                  "value": ""
+                },
+                {
+                  "key": "sortBy",
+                  "value": ""
+                },
+                {
+                  "key": "sortOrder",
+                  "value": ""
+                },
+                {
+                  "key": "rating",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Review",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reviews",
+                "1"
               ]
             }
           },
