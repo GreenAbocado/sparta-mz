@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mz.commerce.common.authentication.Login;
+import com.mz.commerce.common.authentication.RequiredRole;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.dto.order.OrderCancelRequest;
@@ -20,6 +21,7 @@ import com.mz.commerce.dto.order.OrderCreateRequest;
 import com.mz.commerce.dto.order.OrderDetailResponse;
 import com.mz.commerce.dto.order.OrderSearchRequest;
 import com.mz.commerce.dto.order.OrderSummaryResponse;
+import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.service.OrderService;
 
 import jakarta.validation.Valid;
@@ -33,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderController {
 	private final OrderService orderService;
 
+	@RequiredRole({AdminRole.SUPER, AdminRole.CS})
 	@PostMapping
 	public ResponseEntity<OrderSummaryResponse> createOrder(@Valid @RequestBody OrderCreateRequest request,
 		@Login SessionUser user) {
@@ -51,11 +54,13 @@ public class OrderController {
 		return ResponseEntity.ok().body(orderService.getOrder(id));
 	}
 
+	@RequiredRole({AdminRole.SUPER, AdminRole.CS})
 	@PatchMapping("/{id}/status")
 	public ResponseEntity<OrderSummaryResponse> updateStatus(@Min(1) @PathVariable Long id) {
 		return ResponseEntity.ok().body(orderService.updateStatus(id));
 	}
 
+	@RequiredRole({AdminRole.SUPER, AdminRole.CS})
 	@PatchMapping("/{id}/cancel")
 	public ResponseEntity<OrderSummaryResponse> cancel(@Min(1) @PathVariable Long id,
 		@Valid @RequestBody OrderCancelRequest request) {

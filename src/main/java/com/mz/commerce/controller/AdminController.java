@@ -80,7 +80,7 @@ public class AdminController {
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "createdAt") String sortBy,
-		@RequestParam(defaultValue = "desc") String sortOrder,
+		@RequestParam(defaultValue = "asc") String sortOrder,
 		@RequestParam(required = false) AdminRole role,
 		@RequestParam(required = false) AdminStatus status
 	) {

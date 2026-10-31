@@ -164,7 +164,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"setAsDiscontinued\": 0\r\n}",
+              "raw": "{\r\n    \"setAsDiscontinued\": \"false\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -215,7 +215,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"name\" : \"juhan\",\r\n    \"email\" : \"juhan@gmail.com\",\r\n    \"password\" : \"12345678\",\r\n    \"phone\" : \"010-1234-5678\"\r\n}",
+              "raw": "{\r\n    \"name\" : \"juhan\",\r\n    \"email\" : \"juhan@gmail.com\",\r\n    \"password\" : \"12345678\",\r\n    \"phone\" : \"010-1234-5678\",\r\n    \"role\" : \"OPERATION\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -411,13 +411,13 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/admins/1",
+              "raw": "{{baseUrl}}/admins/3",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admins",
-                "1"
+                "3"
               ]
             }
           },
@@ -438,13 +438,13 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/admins/2/status",
+              "raw": "{{baseUrl}}/admins/3/status",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admins",
-                "2",
+                "3",
                 "status"
               ]
             }
@@ -466,13 +466,13 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/admins/2/role",
+              "raw": "{{baseUrl}}/admins/3/role",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admins",
-                "2",
+                "3",
                 "role"
               ]
             }
@@ -521,14 +521,14 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/admins/profile/passwro",
+              "raw": "{{baseUrl}}/admins/profile/password",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admins",
                 "profile",
-                "passwro"
+                "password"
               ]
             }
           },
@@ -540,13 +540,13 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/admins/2/approve",
+              "raw": "{{baseUrl}}/admins/3/approve",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admins",
-                "2",
+                "3",
                 "approve"
               ]
             }
@@ -559,13 +559,13 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/admins/2/approve",
+              "raw": "{{baseUrl}}/admins/3/approve",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admins",
-                "2",
+                "3",
                 "approve"
               ]
             }
@@ -693,7 +693,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"status\" : \"SUSPENDED\"\r\n}",
+              "raw": "{\r\n    \"status\" : \"ACTIVE\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -727,6 +727,141 @@
               "path": [
                 "customers",
                 "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"customerId\" : 1,\r\n    \"productId\" : 1,\r\n    \"quantity\" : 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders?page&size&sortBy=createdAt&sortOrder=asc&status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": ""
+                },
+                {
+                  "key": "size",
+                  "value": ""
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc"
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/1/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "1",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"cancelReason\" : \"배송이 너무 늦어요!!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/1/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "1",
+                "cancel"
               ]
             }
           },

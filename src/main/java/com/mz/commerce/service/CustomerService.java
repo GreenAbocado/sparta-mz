@@ -14,12 +14,15 @@ import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.dto.customer.CustomerDeleteResponse;
+import com.mz.commerce.dto.customer.CustomerOrderSummary;
 import com.mz.commerce.dto.customer.CustomerResponse;
 import com.mz.commerce.dto.customer.CustomerUpdateRequest;
 import com.mz.commerce.dto.customer.CustomerUpdateStatusRequest;
 import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.customer.CustomerStatus;
+import com.mz.commerce.entity.order.OrderStatus;
 import com.mz.commerce.repository.CustomerRepository;
+import com.mz.commerce.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomerService {
 	private final CustomerRepository customerRepository;
+	private final OrderRepository orderRepository;
 
 	@Transactional(readOnly = true)
 	public PageResponse<CustomerResponse> getAllCustomers(String keyword, int page, int size, String sortBy,
@@ -70,8 +74,12 @@ public class CustomerService {
 
 		//5.Page
 		Pageable pageable = PageRequest.of(page - 1, size, sort);
-		Page<Customer> customerPage = customerRepository.searchCustomer(keyword, customerStatus, pageable);
-		Page<CustomerResponse> responsePage = customerPage.map(CustomerResponse::new);
+		Page<CustomerResponse> responsePage = customerRepository.searchCustomer(
+			keyword,
+			customerStatus,
+			OrderStatus.COMPLETED,
+			pageable
+		);
 
 		return new PageResponse<>(responsePage);
 	}
@@ -81,15 +89,10 @@ public class CustomerService {
 		Customer customer = customerRepository.findByIdAndDeletedIsNull(customerId).orElseThrow(
 			() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
 
-		return new CustomerResponse(
-			customer.getId(),
-			customer.getName(),
-			customer.getEmail(),
-			customer.getPhone(),
-			customer.getStatus(),
-			customer.getCreatedAt(),
-			customer.getModifiedAt()
-		);
+		//총 주문 금액 + 총 주문 수
+		CustomerOrderSummary summary = orderRepository.findTotalOrderSummary(customer.getId(), OrderStatus.COMPLETED);
+
+		return new CustomerResponse(customer, summary);
 	}
 
 	@Transactional
@@ -105,15 +108,10 @@ public class CustomerService {
 
 		customer.update(request.getName(), request.getEmail(), request.getPhone());
 
-		return new CustomerResponse(
-			customer.getId(),
-			customer.getName(),
-			customer.getEmail(),
-			customer.getPhone(),
-			customer.getStatus(),
-			customer.getCreatedAt(),
-			customer.getModifiedAt()
-		);
+		//총 주문 금액 + 총 주문 수
+		CustomerOrderSummary summary = orderRepository.findTotalOrderSummary(customer.getId(), OrderStatus.COMPLETED);
+
+		return new CustomerResponse(customer, summary);
 	}
 
 	@Transactional
@@ -130,15 +128,10 @@ public class CustomerService {
 
 		customer.updateStatus(customerStatus);
 
-		return new CustomerResponse(
-			customer.getId(),
-			customer.getName(),
-			customer.getEmail(),
-			customer.getPhone(),
-			customer.getStatus(),
-			customer.getCreatedAt(),
-			customer.getModifiedAt()
-		);
+		//총 주문 금액 + 총 주문 수
+		CustomerOrderSummary summary = orderRepository.findTotalOrderSummary(customer.getId(), OrderStatus.COMPLETED);
+
+		return new CustomerResponse(customer, summary);
 	}
 
 	@Transactional
