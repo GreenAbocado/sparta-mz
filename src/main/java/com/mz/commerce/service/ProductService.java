@@ -1,5 +1,6 @@
 package com.mz.commerce.service;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -13,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mz.commerce.common.exception.CustomException;
 import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.dto.common.PageResponse;
+import com.mz.commerce.dto.product.DetailedResponse.ProductDetailResponse;
+import com.mz.commerce.dto.product.DetailedResponse.ProductRatingCountResponse;
+import com.mz.commerce.dto.product.DetailedResponse.ProductRecentReviewResponse;
+import com.mz.commerce.dto.product.DetailedResponse.ProductReviewSummaryResponse;
 import com.mz.commerce.dto.product.ProductDeleteResponse;
 import com.mz.commerce.dto.product.ProductRegisterRequest;
 import com.mz.commerce.dto.product.ProductResponse;
@@ -25,6 +30,7 @@ import com.mz.commerce.entity.product.ProductCategory;
 import com.mz.commerce.entity.product.ProductStatus;
 import com.mz.commerce.repository.AdminRepository;
 import com.mz.commerce.repository.ProductRepository;
+import com.mz.commerce.repository.ReviewRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductService {
 	private final ProductRepository productRepository;
 	private final AdminRepository adminRepository;
+	private final ReviewRepository reviewRepository;
 
 	@Transactional
 	public ProductResponse registerProduct(Long adminId, ProductRegisterRequest request) {
@@ -118,11 +125,19 @@ public class ProductService {
 	}
 
 	@Transactional(readOnly = true)
-	public ProductResponse getProduct(Long productId) {
+	public ProductDetailResponse getProduct(Long productId) {
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(
 			() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
 
-		return new ProductResponse(product);
+		//리뷰 통계 정보
+		ProductReviewSummaryResponse reviewSummary = reviewRepository.findReviewSummary(productId);
+		List<ProductRatingCountResponse> ratingCounts = reviewRepository.countReviewsByRating(productId);
+
+		//최신 리뷰 목록
+		List<ProductRecentReviewResponse> recentReviews = reviewRepository.findRecentReviews(productId,
+			PageRequest.of(0, 3));
+
+		return new ProductDetailResponse(new ProductResponse(product), reviewSummary, ratingCounts, recentReviews);
 	}
 
 	@Transactional
