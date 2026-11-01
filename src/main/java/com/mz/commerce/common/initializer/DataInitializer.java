@@ -44,7 +44,7 @@ public class DataInitializer implements CommandLineRunner {
 	}
 
 	private void initializeAdmins() {
-		if (adminRepository.existsByEmail("superadmin@super.com")) {
+		if (adminRepository.count() > 0) {
 			return;
 		}
 		Admin superAdmin = new Admin(
@@ -129,6 +129,10 @@ public class DataInitializer implements CommandLineRunner {
 	}
 
 	private void initializeProducts() {
+		if (productRepository.count() > 0) {
+			return;
+		}
+
 		Admin admin = adminRepository.findById(1L).orElseThrow();
 
 		Product product1 = new Product(admin, "상품1", ProductCategory.ELECTRONICS, 1000L, 10, false);
@@ -141,9 +145,16 @@ public class DataInitializer implements CommandLineRunner {
 	}
 
 	private void initializeOrders() {
+		if (orderRepository.count() > 0) {
+			return;
+		}
+
 		Customer customer = customerRepository.findById(1L).orElseThrow();
 		Customer customer2 = customerRepository.findById(2L).orElseThrow();
 		Customer customer3 = customerRepository.findById(3L).orElseThrow();
+		Customer customer4 = customerRepository.findById(4L).orElseThrow();
+		Customer customer5 = customerRepository.findById(5L).orElseThrow();
+		Customer customer6 = customerRepository.findById(6L).orElseThrow();
 
 		Admin admin = adminRepository.findById(1L).orElseThrow();
 		Product product = productRepository.findById(1L).orElseThrow();
@@ -162,8 +173,19 @@ public class DataInitializer implements CommandLineRunner {
 		Order order8 = new Order(customer2, admin, product2, "261031-125641", 15);
 		Order order9 = new Order(customer, admin, product3, "261031-142813", 2);
 		Order order10 = new Order(customer2, admin, product, "261031-163924", 8);
+		Order order11 = new Order(customer2, admin, product3, "261031-163928", 5);
+		Order order12 = new Order(customer4, admin, product3, "261031-163929", 5);
+		Order order13 = new Order(customer5, admin, product, "261031-170101", 2);
+		Order order14 = new Order(customer5, admin, product2, "261031-170102", 4);
+		Order order15 = new Order(customer6, admin, product3, "261031-170103", 1);
+		Order order16 = new Order(customer6, admin, product, "261031-170104", 3);
+		Order order17 = new Order(customer3, admin, product2, "261031-170105", 6);
+		Order order18 = new Order(customer4, admin, product, "261031-170106", 2);
 
-		List<Order> completedOrders = List.of(order6, order7, order8, order9, order10);
+		List<Order> completedOrders = List.of(
+			order6, order7, order8, order9, order10, order11, order12,
+			order13, order14, order15, order16, order17, order18
+		);
 
 		completedOrders.forEach(o -> {
 			o.updateStatus(); // PREPARING → SHIPPING
@@ -171,16 +193,31 @@ public class DataInitializer implements CommandLineRunner {
 		});
 		// ========================================================================================
 
-		orderRepository.saveAll(
-			List.of(order, order2, order3, order4, order5, order6, order7, order8, order9, order10));
+		orderRepository.saveAll(List.of(
+			order, order2, order3, order4, order5,
+			order6, order7, order8, order9, order10, order11, order12,
+			order13, order14, order15, order16, order17, order18
+		));
 	}
 
 	private void initializeReviews() {
+		if (reviewRepository.count() > 0) {
+			return;
+		}
+
 		Order order6 = orderRepository.findById(6L).orElseThrow();
 		Order order7 = orderRepository.findById(7L).orElseThrow();
 		Order order8 = orderRepository.findById(8L).orElseThrow();
 		Order order9 = orderRepository.findById(9L).orElseThrow();
 		Order order10 = orderRepository.findById(10L).orElseThrow();
+		Order order11 = orderRepository.findById(11L).orElseThrow();
+		Order order12 = orderRepository.findById(12L).orElseThrow();
+		Order order13 = orderRepository.findById(13L).orElseThrow();
+		Order order14 = orderRepository.findById(14L).orElseThrow();
+		Order order15 = orderRepository.findById(15L).orElseThrow();
+		Order order16 = orderRepository.findById(16L).orElseThrow();
+		Order order17 = orderRepository.findById(17L).orElseThrow();
+		Order order18 = orderRepository.findById(18L).orElseThrow();
 
 		// 배송 완료된 주문만 리뷰 작성
 		Review review1 = new Review(order6, 5, "배송도 빠르고 상품도 만족스럽습니다.");
@@ -188,9 +225,18 @@ public class DataInitializer implements CommandLineRunner {
 		Review review3 = new Review(order8, 5, "기대했던 것보다 훨씬 좋습니다.");
 		Review review4 = new Review(order9, 2, "전체적으로 무난합니다.");
 		Review review5 = new Review(order10, 4, "가격 대비 만족스러운 상품입니다.");
+		Review review6 = new Review(order11, 3, "상품은 괜찮지만 배송이 조금 아쉬웠습니다.");
+		Review review7 = new Review(order12, 5, "포장도 꼼꼼하고 상품도 정말 마음에 듭니다.");
+		Review review8 = new Review(order13, 5, "디자인도 예쁘고 사용하기 편리합니다.");
+		Review review9 = new Review(order14, 3, "기능은 괜찮지만 조금 아쉬운 부분이 있습니다.");
+		Review review10 = new Review(order15, 4, "생각보다 품질이 좋아서 만족합니다.");
+		Review review11 = new Review(order16, 1, "상품에 흠집이 있어 아쉬웠습니다.");
+		Review review12 = new Review(order17, 5, "재구매하고 싶을 정도로 만족스럽습니다.");
+		Review review13 = new Review(order18, 4, "포장이 깔끔하고 상품도 마음에 듭니다.");
 
 		reviewRepository.saveAll(List.of(
-			review1, review2, review3, review4, review5
+			review1, review2, review3, review4, review5, review6, review7,
+			review8, review9, review10, review11, review12, review13
 		));
 	}
 

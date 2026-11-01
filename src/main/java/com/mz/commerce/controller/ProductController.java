@@ -17,6 +17,7 @@ import com.mz.commerce.common.authentication.Login;
 import com.mz.commerce.common.authentication.RequiredRole;
 import com.mz.commerce.common.authentication.SessionUser;
 import com.mz.commerce.dto.common.PageResponse;
+import com.mz.commerce.dto.product.DetailedResponse.ProductDetailResponse;
 import com.mz.commerce.dto.product.ProductDeleteResponse;
 import com.mz.commerce.dto.product.ProductRegisterRequest;
 import com.mz.commerce.dto.product.ProductResponse;
@@ -66,7 +67,7 @@ public class ProductController {
 
 	//상품 단 건 조회
 	@GetMapping("/{productId}")
-	public ResponseEntity<ProductResponse> getProduct(
+	public ResponseEntity<ProductDetailResponse> getProduct(
 		@PathVariable Long productId
 	) {
 		return ResponseEntity.status(HttpStatus.OK).body(productService.getProduct(productId));
