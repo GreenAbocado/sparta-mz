@@ -111,8 +111,10 @@ public class Admin extends BaseEntity {
 		this.rejectionReason = rejectionReason;
 	}
 
+	// 삭제 시 admin123@example.com_deleted_1730450760000
 	public void delete() {
 		this.deleted = LocalDateTime.now();
+		this.email = this.email + "_deleted_" + System.currentTimeMillis();
 	}
 
 	public void updatePassword(String password) {
