@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mz.commerce.common.authentication.RequiredRole;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.dto.review.ReviewDeleteResponse;
 import com.mz.commerce.dto.review.ReviewResponse;
 import com.mz.commerce.dto.review.ReviewSearchRequest;
+import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.service.ReviewService;
 
 import jakarta.validation.Valid;
@@ -28,6 +30,7 @@ public class ReviewController {
 	private final ReviewService reviewService;
 
 	// 리뷰 리스트 조회
+	@RequiredRole({AdminRole.SUPER, AdminRole.OPERATION})
 	@GetMapping
 	public ResponseEntity<PageResponse<ReviewResponse>> getReviewsPage(
 		@Valid @ModelAttribute ReviewSearchRequest request) {
@@ -35,12 +38,14 @@ public class ReviewController {
 	}
 
 	// 리뷰 상세 조회
+	@RequiredRole({AdminRole.SUPER, AdminRole.OPERATION})
 	@GetMapping("/{reviewId}")
 	public ResponseEntity<ReviewResponse> getReview(@Min(1) @PathVariable Long reviewId) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.getReview(reviewId));
 	}
 
 	// 리뷰 삭제
+	@RequiredRole({AdminRole.SUPER, AdminRole.OPERATION})
 	@DeleteMapping("/{reviewId}")
 	public ResponseEntity<ReviewDeleteResponse> deleteReview(@Min(1) @PathVariable Long reviewId) {
 		return ResponseEntity.status(HttpStatus.OK).body(reviewService.deleteReview(reviewId));
