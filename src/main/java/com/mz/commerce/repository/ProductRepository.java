@@ -38,4 +38,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			AND p.deleted IS NULL
 		""")
 	long countLowStockProducts();
+
+	Long countByStatus(ProductStatus productStatus);
 }

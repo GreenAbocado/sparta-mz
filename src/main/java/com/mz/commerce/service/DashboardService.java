@@ -8,8 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mz.commerce.dto.dashboard.DashboardSummaryResponse;
+import com.mz.commerce.dto.dashboard.DashboardWidgetResponse;
 import com.mz.commerce.entity.admin.AdminStatus;
 import com.mz.commerce.entity.customer.CustomerStatus;
+import com.mz.commerce.entity.order.OrderStatus;
+import com.mz.commerce.entity.product.ProductStatus;
 import com.mz.commerce.repository.AdminRepository;
 import com.mz.commerce.repository.CustomerRepository;
 import com.mz.commerce.repository.OrderRepository;
@@ -27,26 +30,28 @@ public class DashboardService {
 	private final OrderRepository orderRepository;
 	private final ReviewRepository reviewRepository;
 
+	private final LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+
 	@Transactional
 	public DashboardSummaryResponse getSummary() {
 		//admin
-		long totalAdminCount = adminRepository.count();
-		long activeAdminCount = adminRepository.countByStatus(AdminStatus.ACTIVE);
+		Long totalAdminCount = adminRepository.count();
+		Long activeAdminCount = adminRepository.countByStatus(AdminStatus.ACTIVE);
 
 		//customer
-		long totalCustomerCount = customerRepository.count();
-		long activeCustomerCount = customerRepository.countByStatus(CustomerStatus.ACTIVE);
+		Long totalCustomerCount = customerRepository.count();
+		Long activeCustomerCount = customerRepository.countByStatus(CustomerStatus.ACTIVE);
 
 		//product
-		long totalProductCount = productRepository.count();
-		long lowStockProductCount = productRepository.countLowStockProducts();
+		Long totalProductCount = productRepository.count();
+		Long lowStockProductCount = productRepository.countLowStockProducts();
 
 		//orders
-		long totalOrderCount = orderRepository.count();
-		long todayOrderCount = getTodayOrderCount();
+		Long totalOrderCount = orderRepository.count();
+		Long todayOrderCount = getTodayOrderCount();
 
 		//review
-		long totalReviewCount = reviewRepository.count();
+		Long totalReviewCount = reviewRepository.count();
 		Double averageRating = Math.round(reviewRepository.findAverageRating() * 10) / 10.0;
 
 		return new DashboardSummaryResponse(
@@ -63,12 +68,39 @@ public class DashboardService {
 		);
 	}
 
-	public long getTodayOrderCount() {
-		LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+	@Transactional
+	public DashboardWidgetResponse getWidgets() {
+		Long totalSales = orderRepository.sumSalesByStatus(OrderStatus.COMPLETED);
+		Long todaySales = sumTodaySales();
+		Long preparingCount = orderRepository.countByStatus(OrderStatus.PREPARING);
+		Long deliveringCount = orderRepository.countByStatus(OrderStatus.DELIVERING);
+		Long completedCount = orderRepository.countByStatus(OrderStatus.COMPLETED);
+		Long lowStockProductCount = productRepository.countLowStockProducts();
+		Long soldOutproductCount = productRepository.countByStatus(ProductStatus.SOLD_OUT);
 
+		return new DashboardWidgetResponse(
+			totalSales,
+			todaySales,
+			preparingCount,
+			deliveringCount,
+			completedCount,
+			lowStockProductCount,
+			soldOutproductCount
+		);
+	}
+
+	private Long getTodayOrderCount() {
 		LocalDateTime start = today.atStartOfDay();
 		LocalDateTime end = today.plusDays(1).atStartOfDay();
 
-		return orderRepository.countTodayOrders(start, end);
+		return orderRepository.countTodayOrders(start, end, null);
 	}
+
+	private Long sumTodaySales() {
+		LocalDateTime start = today.atStartOfDay();
+		LocalDateTime end = today.plusDays(1).atStartOfDay();
+
+		return orderRepository.sumTodaySales(OrderStatus.COMPLETED, start, end);
+	}
+
 }

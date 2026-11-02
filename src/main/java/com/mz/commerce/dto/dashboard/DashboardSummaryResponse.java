@@ -6,18 +6,18 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class DashboardSummaryResponse {
-	private final long totalAdminCount;
-	private final long activeAdminCount;
+	private final Long totalAdminCount;
+	private final Long activeAdminCount;
 
-	private final long totalCustomerCount;
-	private final long activeCustomerCount;
+	private final Long totalCustomerCount;
+	private final Long activeCustomerCount;
 
-	private final long totalProductCount;
-	private final long lowStockProductCount;
+	private final Long totalProductCount;
+	private final Long lowStockProductCount;
 
-	private final long totalOrderCount;
-	private final long todayOrderCount;
+	private final Long totalOrderCount;
+	private final Long todayOrderCount;
 
-	private final long totalReviewCount;
+	private final Long totalReviewCount;
 	private final Double averageRating;
 }

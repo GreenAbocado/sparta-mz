@@ -64,8 +64,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 			)
 			FROM Order o
 			WHERE o.customer.id = :customerId
-			  AND o.status = :status
-			  AND o.deleted IS NULL
+			  	AND o.status = :status
+				AND o.deleted IS NULL
 		""")
 	CustomerOrderSummary findTotalOrderSummary(
 		@Param("customerId") Long customerId,
@@ -80,9 +80,33 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 			WHERE o.createdAt >= :start
 			AND o.createdAt < :end
 			AND o.deleted IS NULL
+			AND (:status IS NULL OR o.status = :status)
 		""")
 	long countTodayOrders(
 		@Param("start") LocalDateTime start,
+		@Param("end") LocalDateTime end,
+		@Param("status") OrderStatus status
+	);
+
+	@Query("""
+		    SELECT COALESCE(SUM(o.totalPrice), 0)
+		    FROM Order o
+		    WHERE o.status = :status
+		""")
+	Long sumSalesByStatus(@Param("status") OrderStatus status);
+
+	@Query("""
+			SELECT COALESCE(SUM(o.totalPrice), 0)
+			FROM Order o
+			WHERE o.status = :status
+			AND o.createdAt >= :start
+			AND o.createdAt < :end
+		""")
+	Long sumTodaySales(
+		@Param("status") OrderStatus status,
+		@Param("start") LocalDateTime start,
 		@Param("end") LocalDateTime end
 	);
+
+	Long countByStatus(OrderStatus status);
 }
