@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.admin.AdminRole;
+import com.mz.commerce.entity.admin.AdminStatus;
 
 public interface AdminRepository
 	extends JpaRepository<Admin, Long>,
@@ -31,4 +32,12 @@ public interface AdminRepository
 		AND a.deleted IS NULL
 		""")
 	boolean existsActiveByIdAndRole(@Param("id") Long id, @Param("role") AdminRole role);
+
+	@Query("""
+		    SELECT COUNT(a)
+		    FROM Admin a
+		    WHERE a.status = :status
+			AND a.deleted IS NULL
+		""")
+	long countByStatus(@Param("status") AdminStatus status);
 }

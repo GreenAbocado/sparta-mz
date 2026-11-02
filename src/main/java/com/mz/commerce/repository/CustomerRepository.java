@@ -53,4 +53,12 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	Optional<Customer> findByIdAndDeletedIsNull(Long customerId);
 
 	boolean existsByEmail(String email);
+
+	@Query("""
+		    SELECT COUNT(c)
+		    FROM Customer c
+		    WHERE c.status = :status
+			AND c.deleted IS NULL
+		""")
+	long countByStatus(@Param("status") CustomerStatus status);
 }

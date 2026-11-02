@@ -30,4 +30,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	);
 
 	Optional<Product> findByIdAndDeletedIsNull(Long productId);
+
+	@Query("""
+		    SELECT COUNT(p)
+		    FROM Product p
+		    WHERE p.stock <= 5
+			AND p.deleted IS NULL
+		""")
+	long countLowStockProducts();
 }

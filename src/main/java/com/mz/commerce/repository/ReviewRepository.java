@@ -95,4 +95,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 		ORDER BY r.createdAt DESC, r.id DESC
 		""")
 	List<ProductRecentReviewResponse> findRecentReviews(Long productId, PageRequest of);
+
+	@Query("""
+		    SELECT COALESCE(AVG(r.rating), 0)
+		    FROM Review r
+		    WHERE r.deleted IS NULL
+		""")
+	Double findAverageRating();
 }

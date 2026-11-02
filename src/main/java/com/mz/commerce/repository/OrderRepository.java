@@ -1,5 +1,6 @@
 package com.mz.commerce.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -72,4 +73,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	);
 
 	Optional<Order> findByIdAndDeletedIsNull(Long id);
+
+	@Query("""
+			SELECT COUNT(o)
+			FROM Order o
+			WHERE o.createdAt >= :start
+			AND o.createdAt < :end
+			AND o.deleted IS NULL
+		""")
+	long countTodayOrders(
+		@Param("start") LocalDateTime start,
+		@Param("end") LocalDateTime end
+	);
 }
