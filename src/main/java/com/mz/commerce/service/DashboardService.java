@@ -5,11 +5,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mz.commerce.dto.customer.CustomerStatusCountResponse;
 import com.mz.commerce.dto.dashboard.DashboardChartsResponse;
+import com.mz.commerce.dto.dashboard.DashboardRecentOrdersResponse;
 import com.mz.commerce.dto.dashboard.DashboardSummaryResponse;
 import com.mz.commerce.dto.dashboard.DashboardWidgetResponse;
 import com.mz.commerce.dto.product.DetailedResponse.ProductCategoryCountResponse;
@@ -39,7 +41,7 @@ public class DashboardService {
 
 	private final LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public DashboardSummaryResponse getSummary() {
 		//admin
 		Long totalAdminCount = adminRepository.count();
@@ -75,7 +77,7 @@ public class DashboardService {
 		);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public DashboardWidgetResponse getWidgets() {
 		Long totalSales = orderRepository.sumSalesByStatus(OrderStatus.COMPLETED);
 		Long todaySales = sumTodaySales();
@@ -96,7 +98,7 @@ public class DashboardService {
 		);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public DashboardChartsResponse getChartsData() {
 		List<ProductRatingCountResponse> reviewRatingDistribution = distrubutionUtil.getRatingDistribution(null);
 		List<CustomerStatusCountResponse> customerStatusDistribution = distrubutionUtil.getCustomerStatusDistribution();
@@ -104,6 +106,11 @@ public class DashboardService {
 
 		return new DashboardChartsResponse(reviewRatingDistribution, customerStatusDistribution,
 			productCategoryDistribution);
+	}
+
+	@Transactional(readOnly = true)
+	public List<DashboardRecentOrdersResponse> getRecentOrders() {
+		return orderRepository.findRecentOrders(PageRequest.of(0, 10));
 	}
 
 	private Long getTodayOrderCount() {
@@ -119,5 +126,4 @@ public class DashboardService {
 
 		return orderRepository.sumTodaySales(OrderStatus.COMPLETED, start, end);
 	}
-
 }

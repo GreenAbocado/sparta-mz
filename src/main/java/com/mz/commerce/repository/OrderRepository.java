@@ -1,6 +1,7 @@
 package com.mz.commerce.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.mz.commerce.dto.customer.CustomerOrderSummary;
+import com.mz.commerce.dto.dashboard.DashboardRecentOrdersResponse;
 import com.mz.commerce.dto.order.OrderDetailResponse;
 import com.mz.commerce.dto.order.OrderSummaryResponse;
 import com.mz.commerce.entity.order.Order;
@@ -109,4 +111,18 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	);
 
 	Long countByStatus(OrderStatus status);
+
+	@Query("""
+		SELECT new com.mz.commerce.dto.dashboard.DashboardRecentOrdersResponse(
+			o.orderNo,
+			o.customer.name,
+			o.product.name,
+			o.totalPrice,
+			o.status
+		)
+		FROM Order o
+		WHERE o.deleted IS NULL
+		ORDER BY o.createdAt DESC
+		""")
+	List<DashboardRecentOrdersResponse> findRecentOrders(Pageable pageable);
 }

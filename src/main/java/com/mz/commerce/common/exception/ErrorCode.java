@@ -62,6 +62,7 @@ public enum ErrorCode {
 	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",
 		"지원하지 않는 정렬 기준입니다. (id, name, email, phone, status, createdAt, modifiedAt)"),
 	CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "C003", "해당 ID의 고객 정보를 찾을 수 없습니다."),
+	CUSTOMER_DUPLICATE_EMAIL(HttpStatus.CONFLICT, "C004", "이미 사용 중인 이메일입니다."),
 
 	// 상품
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",

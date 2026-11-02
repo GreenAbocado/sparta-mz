@@ -100,7 +100,7 @@ public class CustomerService {
 		//중복 email 검증
 		boolean emailExist = customerRepository.existsByEmail(request.getEmail());
 		if (emailExist) {
-			throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+			throw new CustomException(ErrorCode.CUSTOMER_DUPLICATE_EMAIL);
 		}
 
 		customer.update(request.getName(), request.getEmail(), request.getPhone());
