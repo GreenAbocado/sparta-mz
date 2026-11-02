@@ -70,7 +70,7 @@ public class Customer extends BaseEntity {
 
 	public void validateActive() {
 		if (this.status != CustomerStatus.ACTIVE) {
-			throw new CustomException(CUSTOMER_STATUS_INVALID);
+			throw new CustomException(CUSTOMER_STATUS_NOT_ORDERABLE);
 		}
 	}
 }
