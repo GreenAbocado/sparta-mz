@@ -26,7 +26,7 @@ public enum ErrorCode {
 	REQUEST_URL_INVALID(HttpStatus.NOT_FOUND, "G003", "URL 경로가 잘못되었습니다."),
 	REQUEST_METHOD_INVALID(HttpStatus.METHOD_NOT_ALLOWED, "G004", "HTTP 메서드가 잘못되었습니다."),
 	AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "G005", "인증에 실패하였습니다."),
-	SESSION_INVALIDATED(HttpStatus.CONFLICT, "G006", "세션이 강제 만료되었습니다. 다시 로그인 해주세요."),
+	SESSION_INVALIDATED(HttpStatus.UNAUTHORIZED, "G006", "세션이 강제 만료되었습니다. 다시 로그인 해주세요."),
 	AUTHORIZED_FORBIDDEN(HttpStatus.FORBIDDEN, "G007", "관리자 인가에 실패하였습니다."),
 	SORT_ORDER_INVALID(HttpStatus.BAD_REQUEST, "G008", "정렬 순서는 asc 또는 desc만 가능합니다."),
 	DB_CONFLICT(HttpStatus.CONFLICT, "G009", "이미 존재하거나 처리할 수 없는 데이터입니다."),
@@ -62,7 +62,7 @@ public enum ErrorCode {
 	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",
 		"지원하지 않는 정렬 기준입니다. (id, name, email, phone, status, createdAt, modifiedAt)"),
 	CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "C003", "해당 ID의 고객 정보를 찾을 수 없습니다."),
-	CUSTOMER_DUPLICATE_EMAIL(HttpStatus.CONFLICT, "C004", "이미 사용 중인 이메일입니다."),
+	CUSTOMER_STATUS_NOT_ORDERABLE(HttpStatus.CONFLICT, "C004", "현재 고객 상태로는 주문할 수 없습니다."),
 
 	// 상품
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
