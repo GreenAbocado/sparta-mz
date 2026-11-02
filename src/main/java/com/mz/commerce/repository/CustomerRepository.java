@@ -1,5 +1,6 @@
 package com.mz.commerce.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.mz.commerce.dto.customer.CustomerResponse;
+import com.mz.commerce.dto.customer.CustomerStatusCountResponse;
 import com.mz.commerce.entity.customer.Customer;
 import com.mz.commerce.entity.customer.CustomerStatus;
 import com.mz.commerce.entity.order.OrderStatus;
@@ -61,4 +63,16 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 			AND c.deleted IS NULL
 		""")
 	long countByStatus(@Param("status") CustomerStatus status);
+
+	@Query("""
+			SELECT new com.mz.commerce.dto.customer.CustomerStatusCountResponse(
+				c.status,
+				COUNT(c)
+			)
+			FROM Customer c
+			WHERE c.deleted IS NULL
+			GROUP BY c.status
+			ORDER BY c.status ASC
+		""")
+	List<CustomerStatusCountResponse> distributionByStatus();
 }

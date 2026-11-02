@@ -3,12 +3,17 @@ package com.mz.commerce.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mz.commerce.dto.customer.CustomerStatusCountResponse;
+import com.mz.commerce.dto.dashboard.DashboardChartsResponse;
 import com.mz.commerce.dto.dashboard.DashboardSummaryResponse;
 import com.mz.commerce.dto.dashboard.DashboardWidgetResponse;
+import com.mz.commerce.dto.product.DetailedResponse.ProductCategoryCountResponse;
+import com.mz.commerce.dto.product.DetailedResponse.ProductRatingCountResponse;
 import com.mz.commerce.entity.admin.AdminStatus;
 import com.mz.commerce.entity.customer.CustomerStatus;
 import com.mz.commerce.entity.order.OrderStatus;
@@ -18,6 +23,7 @@ import com.mz.commerce.repository.CustomerRepository;
 import com.mz.commerce.repository.OrderRepository;
 import com.mz.commerce.repository.ProductRepository;
 import com.mz.commerce.repository.ReviewRepository;
+import com.mz.commerce.service.common.DistrubutionUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +35,7 @@ public class DashboardService {
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
 	private final ReviewRepository reviewRepository;
+	private final DistrubutionUtil distrubutionUtil;
 
 	private final LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
@@ -87,6 +94,16 @@ public class DashboardService {
 			lowStockProductCount,
 			soldOutproductCount
 		);
+	}
+
+	@Transactional
+	public DashboardChartsResponse getChartsData() {
+		List<ProductRatingCountResponse> reviewRatingDistribution = distrubutionUtil.getRatingDistribution(null);
+		List<CustomerStatusCountResponse> customerStatusDistribution = distrubutionUtil.getCustomerStatusDistribution();
+		List<ProductCategoryCountResponse> productCategoryDistribution = distrubutionUtil.getCategoryDistribution();
+
+		return new DashboardChartsResponse(reviewRatingDistribution, customerStatusDistribution,
+			productCategoryDistribution);
 	}
 
 	private Long getTodayOrderCount() {

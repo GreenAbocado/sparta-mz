@@ -75,11 +75,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 			COUNT(r)
 		)
 		FROM Review r
-		WHERE r.order.product.id = :productId
+		WHERE (:productId IS NULL OR r.order.product.id = :productId)
 		AND r.deleted IS NULL
 		GROUP BY r.rating
+		ORDER BY r.rating DESC		
 		""")
-	List<ProductRatingCountResponse> countReviewsByRating(Long productId);
+	List<ProductRatingCountResponse> distributionByRatings(Long productId);
 
 	@Query("""
 		SELECT new com.mz.commerce.dto.product.DetailedResponse.ProductRecentReviewResponse(

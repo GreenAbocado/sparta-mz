@@ -46,8 +46,6 @@ public class CustomerService {
 			}
 		}
 
-		System.out.println(">>> reached");
-
 		// 2. page + size 검증 -> controller에서 Bean validation
 
 		// 3. 정렬 기준 검증
@@ -62,7 +60,6 @@ public class CustomerService {
 		String direction = (sortOrder == null || sortOrder.isBlank())
 			? "desc"
 			: sortOrder.toLowerCase(Locale.ROOT);
-		System.out.println(direction);
 		Sort sort;
 		if (direction.equals("asc")) {
 			sort = Sort.by(sortField).ascending();
