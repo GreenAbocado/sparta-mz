@@ -27,7 +27,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 			r.content,
 			r.createdAt
 		)
-		FROM Review r				
+		FROM Review r
 		JOIN r.order o
 		WHERE r.id=:id AND r.deleted IS null
 		""")
