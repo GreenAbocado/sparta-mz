@@ -57,12 +57,14 @@ public enum ErrorCode {
 	INVALID_ADMIN_ROLE(HttpStatus.BAD_REQUEST, "A021", "슈퍼 관리자로는 가입할 수 없습니다."),
 	ADMIN_OPERATION_FORBIDDEN(HttpStatus.FORBIDDEN, "A022", "본인 또는 SUPER 관리자를 대상으로 해당 작업을 수행할 수 없습니다."),
 	SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "A023", "이전에 사용한 비밀번호는 사용할 수 없습니다"),
+
 	// 고객
 	CUSTOMER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "C001", "유효하지 않은 상태입니다. (ACTIVE, INACTIVE, SUSPENDED)"),
 	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",
 		"지원하지 않는 정렬 기준입니다. (id, name, email, phone, status, createdAt, modifiedAt)"),
 	CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "C003", "해당 ID의 고객 정보를 찾을 수 없습니다."),
 	CUSTOMER_STATUS_NOT_ORDERABLE(HttpStatus.CONFLICT, "C004", "현재 고객 상태로는 주문할 수 없습니다."),
+	CUSTOMER_DUPLICATE_EMAIL(HttpStatus.CONFLICT, "C005", "이미 사용 중인 이메일입니다."),
 
 	// 상품
 	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
