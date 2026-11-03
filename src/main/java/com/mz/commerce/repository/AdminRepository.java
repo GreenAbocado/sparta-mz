@@ -2,11 +2,14 @@ package com.mz.commerce.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.mz.commerce.dto.admin.AdminResponse;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.entity.admin.AdminStatus;
@@ -40,4 +43,32 @@ public interface AdminRepository
 			AND a.deleted IS NULL
 		""")
 	long countByStatus(@Param("status") AdminStatus status);
+
+	@Query("""
+		SELECT new com.mz.commerce.dto.admin.AdminResponse(
+		    a.id,
+		    a.name,
+		    a.email,
+		    a.phone,
+		    a.status,
+		    a.role,
+		    a.createdAt,
+		    a.approvedAt,
+		    a.rejectedAt,
+		    a.rejectionReason
+		)
+		FROM Admin a
+		WHERE a.deleted IS NULL
+		  AND (:keyword IS NULL OR :keyword = ''
+		       OR LOWER(a.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+		       OR LOWER(a.email) LIKE LOWER(CONCAT('%', :keyword, '%')))
+		  AND (:role IS NULL OR a.role = :role)
+		  AND (:status IS NULL OR a.status = :status)
+		""")
+	Page<AdminResponse> findAdminPageInDto(
+		Pageable pageable,
+		@Param("keyword") String keyword,
+		@Param("role") AdminRole role,
+		@Param("status") AdminStatus status
+	);
 }

@@ -2,13 +2,14 @@ package com.mz.commerce.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mz.commerce.common.authentication.Login;
@@ -24,13 +25,13 @@ import com.mz.commerce.dto.admin.AdminRejectRequest;
 import com.mz.commerce.dto.admin.AdminResponse;
 import com.mz.commerce.dto.admin.AdminRoleUpdateRequest;
 import com.mz.commerce.dto.admin.AdminRoleUpdateResponse;
+import com.mz.commerce.dto.admin.AdminSearchRequest;
 import com.mz.commerce.dto.admin.AdminStatusUpdateRequest;
 import com.mz.commerce.dto.admin.AdminStatusUpdateResponse;
 import com.mz.commerce.dto.admin.AdminUpdateRequest;
 import com.mz.commerce.dto.admin.AdminUpdateResponse;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.entity.admin.AdminRole;
-import com.mz.commerce.entity.admin.AdminStatus;
 import com.mz.commerce.service.AdminService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,6 +40,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 public class AdminController {
 	private final AdminService adminService;
@@ -76,15 +78,8 @@ public class AdminController {
 	@RequiredRole(AdminRole.SUPER)
 	@GetMapping("/admins")
 	public ResponseEntity<PageResponse<AdminResponse>> getAllAdmins(
-		@RequestParam(required = false) String keyword,
-		@RequestParam(defaultValue = "1") int page,
-		@RequestParam(defaultValue = "10") int size,
-		@RequestParam(defaultValue = "createdAt") String sortBy,
-		@RequestParam(defaultValue = "asc") String sortOrder,
-		@RequestParam(required = false) AdminRole role,
-		@RequestParam(required = false) AdminStatus status
-	) {
-		return ResponseEntity.ok(adminService.getAll(keyword, page, size, sortBy, sortOrder, role, status));
+		@Valid @ModelAttribute AdminSearchRequest request) {
+		return ResponseEntity.ok(adminService.getAll(request));
 	}
 
 	@RequiredRole(AdminRole.SUPER)

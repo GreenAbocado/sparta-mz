@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "610a4a57-0eb6-4f4e-a306-053186be279d",
     "name": "Commerce",
-    "description": "- 관리자 API\n    \n- 고객 API\n    \n- 상품 API",
+    "description": "- 관리자 API\n    \n- 고객 API\n    \n- 상품 API\n    \n- 주문 API\n    \n- 리뷰 API\n    \n- 대시보드드",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "58022453",
     "_collection_link": "https://go.postman.co/collection/58022453-610a4a57-0eb6-4f4e-a306-053186be279d?source=collection_link"
@@ -942,6 +942,83 @@
               "path": [
                 "reviews",
                 "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "summary"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Widgets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/widget",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "widget"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Charts Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/charts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "charts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Recent Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/recent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "recent"
               ]
             }
           },

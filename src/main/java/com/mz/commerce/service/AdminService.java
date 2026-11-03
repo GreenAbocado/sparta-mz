@@ -1,13 +1,7 @@
 package com.mz.commerce.service;
 
-import java.util.Locale;
 import java.util.Set;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +16,7 @@ import com.mz.commerce.dto.admin.AdminRegisterResponse;
 import com.mz.commerce.dto.admin.AdminResponse;
 import com.mz.commerce.dto.admin.AdminRoleUpdateRequest;
 import com.mz.commerce.dto.admin.AdminRoleUpdateResponse;
+import com.mz.commerce.dto.admin.AdminSearchRequest;
 import com.mz.commerce.dto.admin.AdminStatusUpdateRequest;
 import com.mz.commerce.dto.admin.AdminStatusUpdateResponse;
 import com.mz.commerce.dto.admin.AdminUpdateRequest;
@@ -103,73 +98,14 @@ public class AdminService {
 
 	// 관리자 목록: 검색, 필터, 정렬, 페이지네이션
 	@Transactional(readOnly = true)
-	public PageResponse<AdminResponse> getAll(
-		String keyword,
-		int page,
-		int size,
-		String sortBy,
-		String sortOrder,
-		AdminRole role,
-		AdminStatus status
-	) {
-		if (page < 1 || size < 1) {
-			throw new CustomException(ErrorCode.INVALID_PAGE_REQUEST);
-		}
-
-		if (!SORT_FIELDS.contains(sortBy)) {
-			throw new CustomException(ErrorCode.INVALID_SORT_FIELD);
-		}
-
-		Sort.Direction direction;
-		try {
-			direction = Sort.Direction.fromString(sortOrder);
-		} catch (IllegalArgumentException e) {
-			throw new CustomException(ErrorCode.INVALID_SORT_ORDER);
-		}
-
-		Pageable pageable = PageRequest.of(
-			page - 1,
-			size,
-			Sort.by(direction, sortBy)
-		);
-
-		Specification<Admin> spec = (root, query, cb) ->
-			cb.isNull(root.get("deleted"));
-
-		if (keyword != null && !keyword.isBlank()) {
-			String searchKeyword =
-				"%" + keyword.trim().toLowerCase(Locale.ROOT) + "%";
-
-			spec = spec.and((root, query, cb) ->
-				cb.or(
-					cb.like(
-						cb.lower(root.get("name")),
-						searchKeyword
-					),
-					cb.like(
-						cb.lower(root.get("email")),
-						searchKeyword
-					)
-				)
-			);
-		}
-
-		if (role != null) {
-			spec = spec.and((root, query, cb) ->
-				cb.equal(root.get("role"), role)
-			);
-		}
-
-		if (status != null) {
-			spec = spec.and((root, query, cb) ->
-				cb.equal(root.get("status"), status)
-			);
-		}
-
-		Page<Admin> adminPage = adminRepository.findAll(spec, pageable);
-
+	public PageResponse<AdminResponse> getAll(AdminSearchRequest request) {
 		return new PageResponse<>(
-			adminPage.map(AdminResponse::new)
+			adminRepository.findAdminPageInDto(
+				request.toPageable(),
+				request.getKeyword(),
+				request.getRole(),
+				request.getStatus()
+			)
 		);
 	}
 
