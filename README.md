@@ -2,6 +2,7 @@
 
 이커머스 백오피스 API · Spring Boot + MySQL 기반 백엔드 프로젝트
 관리자가 고객·상품·주문·리뷰를 관리하는 REST API를 쿠키·세션 인증과 역할 기반 인가로 구현했습니다.
+
 ---
 
 ## 📌 1. 프로젝트 개요 (Overview)
@@ -80,7 +81,7 @@
 
 ## ✏️ 4. API 명세서
 
-* [👉 Sparta-MZ 팀 노션 API 명세서 보러 가기](https://app.notion.com/p/teamsparta/74f2dc3ef51483b094d30152bee49bd8?v=2b42dc3ef514836d8c260804a87084b8)
+* [👉 Sparta-MZ 팀 노션 API 명세서 보러 가기](https://github.com/GreenAbocado/sparta-mz/wiki)
 
 ---
 
@@ -88,19 +89,19 @@
 
 ### 관리자 플로우차트
 
-![관리자 플로우차트](./images/adminsflowchar.png)
+![관리자 플로우차트](./images/adminsflowchart.svg)
 
 ### 고객 플로우차트
 
-![고객 플로우차트](./images/customersflowchar.png)
+![고객 플로우차트](./images/customerflowchart.svg)
 
 ### 주문 플로우차트
 
-![주문 플로우차트](./images/orderflowchar.png)
+![주문 플로우차트](./images/orderflowchart.svg)
 
 ### 상품 플로우차트
 
-![상품 플로우차트](./images/productsflowchar.png)
+![상품 플로우차트](./images/productsflowchart.svg)
 
 ---
 
