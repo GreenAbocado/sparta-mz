@@ -5,24 +5,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mz.commerce.common.authentication.RequiredRole;
 import com.mz.commerce.dto.common.PageResponse;
 import com.mz.commerce.dto.customer.CustomerDeleteResponse;
 import com.mz.commerce.dto.customer.CustomerResponse;
+import com.mz.commerce.dto.customer.CustomerSearchRequest;
 import com.mz.commerce.dto.customer.CustomerUpdateRequest;
 import com.mz.commerce.dto.customer.CustomerUpdateStatusRequest;
 import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.service.CustomerService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,19 +32,11 @@ import lombok.RequiredArgsConstructor;
 public class CustomerController {
 	private final CustomerService customerService;
 
-	//고객 등록 -> 생략
-
 	//고객 리스트 조회
 	@GetMapping
 	public ResponseEntity<PageResponse<CustomerResponse>> getCustomers(
-		@RequestParam(required = false) String keyword,
-		@RequestParam(defaultValue = "1") @Min(1) int page,
-		@RequestParam(defaultValue = "10") @Min(1) int size,
-		@RequestParam(defaultValue = "id") String sortBy,
-		@RequestParam(defaultValue = "asc") String sortOrder,
-		@RequestParam(required = false) String status) {
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(customerService.getAllCustomers(keyword, page, size, sortBy, sortOrder, status));
+		@Valid @ModelAttribute CustomerSearchRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(customerService.getAllCustomers(request));
 	}
 
 	//고객 상세 조회

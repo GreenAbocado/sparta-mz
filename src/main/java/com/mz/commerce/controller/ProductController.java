@@ -5,12 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mz.commerce.common.authentication.Login;
@@ -21,6 +21,7 @@ import com.mz.commerce.dto.product.DetailedResponse.ProductDetailResponse;
 import com.mz.commerce.dto.product.ProductDeleteResponse;
 import com.mz.commerce.dto.product.ProductRegisterRequest;
 import com.mz.commerce.dto.product.ProductResponse;
+import com.mz.commerce.dto.product.ProductSearchRequest;
 import com.mz.commerce.dto.product.ProductUpdateRequest;
 import com.mz.commerce.dto.product.ProductUpdateStatusRequest;
 import com.mz.commerce.dto.product.ProductUpdateStockRequest;
@@ -28,7 +29,6 @@ import com.mz.commerce.entity.admin.AdminRole;
 import com.mz.commerce.service.ProductService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -53,16 +53,8 @@ public class ProductController {
 	//상품 전체 조회
 	@GetMapping
 	public ResponseEntity<PageResponse<ProductResponse>> getProducts(
-		@RequestParam(required = false) String keyword,
-		@RequestParam(defaultValue = "1") @Min(1) int page,
-		@RequestParam(defaultValue = "10") @Min(1) int size,
-		@RequestParam(defaultValue = "id") String sortBy,
-		@RequestParam(defaultValue = "asc") String sortOrder,
-		@RequestParam(required = false) String category,
-		@RequestParam(required = false) String status
-	) {
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(productService.getAllProducts(keyword, page, size, sortBy, sortOrder, category, status));
+		@Valid @ModelAttribute ProductSearchRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProducts(request));
 	}
 
 	//상품 단 건 조회

@@ -46,11 +46,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 			  )
 			  AND (:status IS NULL OR c.status = :status)
 		""")
-	Page<CustomerResponse> searchCustomer(
-		@Param("keyword") String keyword,
-		@Param("status") CustomerStatus status,
-		@Param("orderStatus") OrderStatus orderStatus,
-		Pageable pageable);
+	Page<CustomerResponse> findCustomerPageInDto(Pageable pageable, @Param("keyword") String keyword,
+		@Param("status") CustomerStatus status, @Param("orderStatus") OrderStatus orderStatus);
 
 	Optional<Customer> findByIdAndDeletedIsNull(Long customerId);
 

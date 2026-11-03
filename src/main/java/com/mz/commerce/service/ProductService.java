@@ -1,13 +1,8 @@
 package com.mz.commerce.service;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +16,13 @@ import com.mz.commerce.dto.product.DetailedResponse.ProductReviewSummaryResponse
 import com.mz.commerce.dto.product.ProductDeleteResponse;
 import com.mz.commerce.dto.product.ProductRegisterRequest;
 import com.mz.commerce.dto.product.ProductResponse;
+import com.mz.commerce.dto.product.ProductSearchRequest;
 import com.mz.commerce.dto.product.ProductUpdateRequest;
 import com.mz.commerce.dto.product.ProductUpdateStatusRequest;
 import com.mz.commerce.dto.product.ProductUpdateStockRequest;
 import com.mz.commerce.entity.admin.Admin;
 import com.mz.commerce.entity.product.Product;
 import com.mz.commerce.entity.product.ProductCategory;
-import com.mz.commerce.entity.product.ProductStatus;
 import com.mz.commerce.repository.AdminRepository;
 import com.mz.commerce.repository.ProductRepository;
 import com.mz.commerce.repository.ReviewRepository;
@@ -66,62 +61,11 @@ public class ProductService {
 	}
 
 	@Transactional(readOnly = true)
-	public PageResponse<ProductResponse> getAllProducts(String keyword, int page, int size, String sortBy,
-		String sortOrder,
-		String category, String status) {
+	public PageResponse<ProductResponse> getAllProducts(ProductSearchRequest request) {
 
-		//1. category + status 검증
-		ProductCategory productCategory = null;
-		if (category != null && !category.isBlank()) {
-			try {
-				productCategory = ProductCategory.valueOf(category);
-			} catch (IllegalArgumentException e) {
-				throw new CustomException(ErrorCode.PRODUCT_CATEGORY_INVALID);
-			}
-		}
-		ProductStatus productStatus = null;
-		if (status != null && !status.isBlank()) {
-			try {
-				productStatus = ProductStatus.valueOf(status);
-			} catch (IllegalArgumentException e) {
-				throw new CustomException(ErrorCode.PRODUCT_STATUS_INVALID);
-			}
-		}
-
-		// 2. page + size 검증 -> controller에서 Bean validation
-
-		// 3. 정렬 기준 검증
-		String sortField = (sortBy == null || sortBy.isBlank())
-			? "id"
-			: sortBy;
-
-		Set<String> allowedSorts = Set.of("id", "name", "category", "price", "stock", "status", "createdAt",
-			"modifiedAt");
-
-		if (!allowedSorts.contains(sortField)) {
-			throw new CustomException(ErrorCode.PRODUCT_SORT_FIELD_INVALID);
-		}
-
-		// 4. 정렬 순서 검증
-		String direction = (sortOrder == null || sortOrder.isBlank())
-			? "desc"
-			: sortOrder.toLowerCase(Locale.ROOT);
-
-		Sort sort;
-
-		if (direction.equals("asc")) {
-			sort = Sort.by(sortField).ascending();
-		} else if (direction.equals("desc")) {
-			sort = Sort.by(sortField).descending();
-		} else {
-			throw new CustomException(ErrorCode.SORT_ORDER_INVALID);
-		}
-		Pageable pageable = PageRequest.of(page - 1, size, sort);
-
-		Page<Product> productPage = productRepository.searchProduct(keyword, productCategory, productStatus, pageable);
-		Page<ProductResponse> responsePage = productPage.map(ProductResponse::new);
-
-		return new PageResponse<>(responsePage);
+		return new PageResponse<>(
+			productRepository.searchProduct(request.toPageable(), request.getKeyword(), request.getCategory(),
+				request.getStatus()));
 
 	}
 

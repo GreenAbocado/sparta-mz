@@ -12,16 +12,16 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class AdminResponse {
-	private Long id;
-	private String name;
-	private String email;
-	private String phone;
-	private AdminStatus status;
-	private AdminRole role;
-	private LocalDateTime createdAt;
-	private LocalDateTime approvedAt;
-	private LocalDateTime rejectedAt;
-	private String rejectionReason;
+	private final Long id;
+	private final String name;
+	private final String email;
+	private final String phone;
+	private final AdminStatus status;
+	private final AdminRole role;
+	private final LocalDateTime createdAt;
+	private final LocalDateTime approvedAt;
+	private final LocalDateTime rejectedAt;
+	private final String rejectionReason;
 
 	public AdminResponse(Admin admin) {
 		this.id = admin.getId();
