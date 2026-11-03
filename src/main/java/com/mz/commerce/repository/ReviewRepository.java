@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -75,11 +74,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 			COUNT(r)
 		)
 		FROM Review r
-		WHERE r.order.product.id = :productId
+		WHERE (:productId IS NULL OR r.order.product.id = :productId)
 		AND r.deleted IS NULL
 		GROUP BY r.rating
+		ORDER BY r.rating DESC		
 		""")
-	List<ProductRatingCountResponse> countReviewsByRating(Long productId);
+	List<ProductRatingCountResponse> distributionByRatings(Long productId);
 
 	@Query("""
 		SELECT new com.mz.commerce.dto.product.DetailedResponse.ProductRecentReviewResponse(
@@ -94,5 +94,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 		AND r.deleted IS NULL
 		ORDER BY r.createdAt DESC, r.id DESC
 		""")
-	List<ProductRecentReviewResponse> findRecentReviews(Long productId, PageRequest of);
+	List<ProductRecentReviewResponse> findRecentReviews(Long productId, Pageable pageable);
+
+	@Query("""
+		    SELECT COALESCE(AVG(r.rating), 0)
+		    FROM Review r
+		    WHERE r.deleted IS NULL
+		""")
+	Double findAverageRating();
 }

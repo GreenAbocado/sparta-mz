@@ -31,8 +31,8 @@ import com.mz.commerce.entity.product.ProductStatus;
 import com.mz.commerce.repository.AdminRepository;
 import com.mz.commerce.repository.ProductRepository;
 import com.mz.commerce.repository.ReviewRepository;
+import com.mz.commerce.service.common.DistrubutionUtil;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -41,6 +41,7 @@ public class ProductService {
 	private final ProductRepository productRepository;
 	private final AdminRepository adminRepository;
 	private final ReviewRepository reviewRepository;
+	private final DistrubutionUtil distrubutionUtil;
 
 	@Transactional
 	public ProductResponse registerProduct(Long adminId, ProductRegisterRequest request) {
@@ -131,7 +132,7 @@ public class ProductService {
 
 		//리뷰 통계 정보
 		ProductReviewSummaryResponse reviewSummary = reviewRepository.findReviewSummary(productId);
-		List<ProductRatingCountResponse> ratingCounts = reviewRepository.countReviewsByRating(productId);
+		List<ProductRatingCountResponse> ratingCounts = distrubutionUtil.getRatingDistribution(productId);
 
 		//최신 리뷰 목록
 		List<ProductRecentReviewResponse> recentReviews = reviewRepository.findRecentReviews(productId,
@@ -173,7 +174,7 @@ public class ProductService {
 	}
 
 	@Transactional
-	public ProductResponse updateProductStatus(Long productId, @Valid ProductUpdateStatusRequest request) {
+	public ProductResponse updateProductStatus(Long productId, ProductUpdateStatusRequest request) {
 
 		//상품 검증
 		Product product = productRepository.findByIdAndDeletedIsNull(productId).orElseThrow(

@@ -1,5 +1,7 @@
 package com.mz.commerce.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.mz.commerce.dto.customer.CustomerOrderSummary;
+import com.mz.commerce.dto.dashboard.DashboardRecentOrdersResponse;
 import com.mz.commerce.dto.order.OrderDetailResponse;
 import com.mz.commerce.dto.order.OrderSummaryResponse;
 import com.mz.commerce.entity.order.Order;
@@ -63,8 +66,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 			)
 			FROM Order o
 			WHERE o.customer.id = :customerId
-			  AND o.status = :status
-			  AND o.deleted IS NULL
+			  	AND o.status = :status
+				AND o.deleted IS NULL
 		""")
 	CustomerOrderSummary findTotalOrderSummary(
 		@Param("customerId") Long customerId,
@@ -72,4 +75,54 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	);
 
 	Optional<Order> findByIdAndDeletedIsNull(Long id);
+
+	@Query("""
+			SELECT COUNT(o)
+			FROM Order o
+			WHERE o.createdAt >= :start
+			AND o.createdAt < :end
+			AND o.deleted IS NULL
+			AND (:status IS NULL OR o.status = :status)
+		""")
+	long countTodayOrders(
+		@Param("start") LocalDateTime start,
+		@Param("end") LocalDateTime end,
+		@Param("status") OrderStatus status
+	);
+
+	@Query("""
+		    SELECT COALESCE(SUM(o.totalPrice), 0)
+		    FROM Order o
+		    WHERE o.status = :status
+		""")
+	Long sumSalesByStatus(@Param("status") OrderStatus status);
+
+	@Query("""
+			SELECT COALESCE(SUM(o.totalPrice), 0)
+			FROM Order o
+			WHERE o.status = :status
+			AND o.createdAt >= :start
+			AND o.createdAt < :end
+		""")
+	Long sumTodaySales(
+		@Param("status") OrderStatus status,
+		@Param("start") LocalDateTime start,
+		@Param("end") LocalDateTime end
+	);
+
+	Long countByStatus(OrderStatus status);
+
+	@Query("""
+		SELECT new com.mz.commerce.dto.dashboard.DashboardRecentOrdersResponse(
+			o.orderNo,
+			o.customer.name,
+			o.product.name,
+			o.totalPrice,
+			o.status
+		)
+		FROM Order o
+		WHERE o.deleted IS NULL
+		ORDER BY o.createdAt DESC
+		""")
+	List<DashboardRecentOrdersResponse> findRecentOrders(Pageable pageable);
 }
