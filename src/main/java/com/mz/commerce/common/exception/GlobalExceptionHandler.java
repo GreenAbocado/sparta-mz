@@ -1,0 +1,183 @@
+package com.mz.commerce.common.exception;
+
+import static com.mz.commerce.common.exception.ErrorCode.*;
+
+import java.util.List;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * 전역 예외 처리를 담당합니다.
+ *
+ * <p>각 예외를 {@link ErrorCode}에 대응시켜 {@link ErrorResponse}로 변환합니다.
+ */
+@RestControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+
+	// 형식
+
+	/**
+	 * HTTP 요청 형식 오류를 처리합니다.
+	 *
+	 * <p>JSON 파싱 오류, 타입 불일치, 쿼리 누락이 해당됩니다.
+	 * {@link ErrorCode#REQUEST_FORMAT_INVALID}에 대응됩니다.
+	 */
+	@ExceptionHandler({HttpMessageNotReadableException.class,
+		MethodArgumentTypeMismatchException.class,
+		MissingServletRequestParameterException.class})
+	public ResponseEntity<ErrorResponse> handleHttpFormatException(HttpServletRequest request, Exception e) {
+		printWarnLog(request, e.getClass().getSimpleName());
+		return buildResponseEntity(REQUEST_FORMAT_INVALID);
+	}
+
+	// 검증 - 객체
+
+	/**
+	 * DTO 검증, ModelAttribute 등 객체의 BindingResult(바인딩 오류, 검증 오류 결과) 관련 오류를 처리합니다.
+	 *
+	 * <p>{@link ErrorCode#REQUEST_VALIDATION_FAILED}에 대응됩니다.
+	 * {@link MethodArgumentNotValidException#getBindingResult}를 통해 꺼낸 fieldError로
+	 * {@link ErrorResponse}를 생성할 때 필드별 에러 내역을 상세히 담습니다.
+	 */
+	@ExceptionHandler(BindException.class)
+	public ResponseEntity<ErrorResponse> handleValidationException(HttpServletRequest request, BindException e) {
+		List<FieldErrorResponse> fieldErrors = e.getBindingResult().getFieldErrors().stream()
+			.map(FieldErrorResponse::new).toList();
+		printWarnLog(request, "DTO/ModelAttribute 검증 실패");
+		return buildValidationFailResponseEntity(fieldErrors);
+	}
+
+	// 검증 - 쿼리, 경로변수
+
+	/**
+	 * 쿼리, 경로변수 Bean Validation 검증 오류를 처리합니다. (@Validated)
+	 *
+	 * <p>{@link ErrorCode#REQUEST_VALIDATION_FAILED}에 대응됩니다.
+	 * {@link ConstraintViolationException#getConstraintViolations}를 통해 꺼낸 ConstraintViolation으로
+	 * {@link ErrorResponse}를 생성할 때 필드별 에러 내역을 상세히 담습니다.
+	 */
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<ErrorResponse> handleQueryValidationException(HttpServletRequest request,
+		ConstraintViolationException e) {
+		List<FieldErrorResponse> fieldErrors = e.getConstraintViolations().stream()
+			.map(FieldErrorResponse::new).toList();
+		printWarnLog(request, "쿼리/경로변수 검증 실패");
+		return buildValidationFailResponseEntity(fieldErrors);
+	}
+
+	/**
+	 * 쿼리, 경로변수 Bean Validation 검증 오류를 처리합니다.
+	 *
+	 * <p>예외에서 필드에러를 꺼내는 로직이 복잡하여 우선 기본 검증 실패 응답을 반환하도록 합니다.
+	 */
+
+	@ExceptionHandler(HandlerMethodValidationException.class)
+	public ResponseEntity<ErrorResponse> handleHandlerMethodValidationException(HttpServletRequest request) {
+		printWarnLog(request, "쿼리/경로변수 검증 실패");
+		return buildResponseEntity(REQUEST_VALIDATION_FAILED);
+	}
+
+	// 커스텀
+
+	/**
+	 * 비즈니스 예외를 처리합니다.
+	 *
+	 * <p>{@link ErrorCode}에 각 도메인별로 정의한 상수와 대응됩니다.
+	 *
+	 * @param e 비즈니스 예외에서 공통으로 사용되는 커스텀 예외
+	 */
+	@ExceptionHandler(CustomException.class)
+	public ResponseEntity<ErrorResponse> handleCustomException(HttpServletRequest request, CustomException e) {
+		printWarnLog(request, e.getErrorCode().getCode());
+		return buildResponseEntity(e.getErrorCode());
+	}
+
+	/**
+	 * 잘못된 URL 요청을 처리합니다.
+	 *
+	 * <p>{@link ErrorCode#REQUEST_URL_INVALID}와 대응됩니다.
+	 */
+	@ExceptionHandler(NoResourceFoundException.class)
+	public ResponseEntity<ErrorResponse> handleNoResourceFoundException(HttpServletRequest request) {
+		printWarnLog(request, "URL Not Found");
+		return buildResponseEntity(REQUEST_URL_INVALID);
+	}
+
+	/**
+	 * 잘못된 HTTP 메서드 요청을 처리합니다.
+	 *
+	 * <p>{@link ErrorCode#REQUEST_METHOD_INVALID}와 대응됩니다.
+	 */
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpServletRequest request) {
+		printWarnLog(request, "Method Not Allowed");
+		return buildResponseEntity(REQUEST_METHOD_INVALID);
+	}
+
+	/**
+	 * DB 무결성 위반 예외를 처리합니다.
+	 *
+	 * <p>{@link ErrorCode#DB_CONFLICT}와 대응됩니다.
+	 * <p>우선은 Unique제약 위반을 포함하여 모든 DB 무결성 위반을 잡습니다.
+	 * <br>409로 응답하지만 서버측 오류일 가능성이 있기에 log.error를 남깁니다.
+	 */
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(Exception e) {
+		log.error("DB 무결성 위반", e);
+		return buildResponseEntity(DB_CONFLICT);
+	}
+
+	/**
+	 * 서버 내부 오류를 처리합니다.
+	 *
+	 * <p>위에서 잡히지 않은 클라이언트 오류가 처리될 수 있습니다.
+	 * {@link ErrorCode#SERVER_ERROR}와 대응됩니다.
+	 */
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleAllException(Exception e) {
+		log.error("서버 오류", e);
+		return buildResponseEntity(SERVER_ERROR);
+	}
+
+	/**
+	 * 예외 처리 핸들러에서 반복되는 ResponseEntity 빌딩 작업을 처리합니다.
+	 *
+	 * @param errorCode 각 예외 처리 핸들러에서 전달한 에러코드
+	 */
+	private ResponseEntity<ErrorResponse> buildResponseEntity(ErrorCode errorCode) {
+		return ResponseEntity.status(errorCode.getStatus())
+			.body(new ErrorResponse(errorCode));
+	}
+
+	/**
+	 * 검증 예외 처리 핸들러 2개에서 반복되는 빌딩 작업을 처리합니다.
+	 *
+	 * <p>{@link ErrorCode#REQUEST_VALIDATION_FAILED}와 fieldErrors를 통해 빌딩 작업을 처리합니다.
+	 *
+	 * @param fieldErrors 검증 예외에서 꺼낸 필드 에러 정보를 변환한 {@link FieldErrorResponse}
+	 */
+	private ResponseEntity<ErrorResponse> buildValidationFailResponseEntity(List<FieldErrorResponse> fieldErrors) {
+		return ResponseEntity.status(REQUEST_VALIDATION_FAILED.getStatus())
+			.body(new ErrorResponse(REQUEST_VALIDATION_FAILED, fieldErrors));
+	}
+
+	private void printWarnLog(HttpServletRequest request, String str) {
+		log.warn("{} {} {}", request.getMethod(), request.getRequestURI(), str);
+	}
+}

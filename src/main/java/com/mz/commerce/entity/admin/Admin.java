@@ -2,6 +2,8 @@ package com.mz.commerce.entity.admin;
 
 import java.time.LocalDateTime;
 
+import com.mz.commerce.common.exception.CustomException;
+import com.mz.commerce.common.exception.ErrorCode;
 import com.mz.commerce.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -36,7 +38,7 @@ public class Admin extends BaseEntity {
 	private String password;
 
 	@Column(nullable = false, length = 13)
-	@Pattern(regexp = "^01(?:0|1|[6-9])-?\\d{3,4}-?\\d{4}$", message = "올바른 전화번호 형식이가 아닙니다.")
+	@Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "올바른 전화번호 형식이 아닙니다.")
 	private String phone;
 
 	@Enumerated(EnumType.STRING)
@@ -67,5 +69,68 @@ public class Admin extends BaseEntity {
 		this.phone = phone;
 		this.status = status != null ? status : AdminStatus.PENDING;
 		this.role = role != null ? role : AdminRole.OPERATION;
+	}
+
+	public void update(String name, String email, String phone) {
+		this.name = name;
+		this.email = email;
+		this.phone = phone;
+	}
+
+	public void updateStatus(AdminStatus status, String rejectionReason) {
+		this.status = status;
+		this.rejectionReason = rejectionReason;
+
+		if (status == AdminStatus.REJECTED) {
+			this.rejectedAt = LocalDateTime.now();
+		} else {
+			this.rejectedAt = null;
+		}
+	}
+
+	public void updateRole(AdminRole role) {
+		this.role = role;
+	}
+
+	public void approve() {
+		validatePending(ErrorCode.ADMIN_APPROVAL_NOT_ALLOWED);
+		this.status = AdminStatus.ACTIVE;
+		this.approvedAt = LocalDateTime.now();
+		// this.rejectedAt = null;
+		// this.rejectionReason = null;
+		// PENDING에서 처리
+	}
+
+	public void reject(String rejectionReason) {
+		if (rejectionReason == null || rejectionReason.isBlank()) {
+			throw new CustomException(ErrorCode.REJECTION_REASON_REQUIRED);
+		}
+		validatePending(ErrorCode.ADMIN_REJECTION_NOT_ALLOWED);
+		this.status = AdminStatus.REJECTED;
+		this.rejectedAt = LocalDateTime.now();
+		this.rejectionReason = rejectionReason;
+	}
+
+	// 삭제 시 admin123@example.com_deleted_1730450760000
+	public void delete() {
+		this.deleted = LocalDateTime.now();
+		this.email = this.email + "_deleted_" + System.currentTimeMillis();
+	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
+
+	private void validatePending(ErrorCode otherwise) {
+		if (this.status == AdminStatus.ACTIVE) {
+			throw new CustomException(ErrorCode.ADMIN_ALREADY_ACTIVE);
+		}
+		if (this.status == AdminStatus.REJECTED) {
+			throw new CustomException(ErrorCode.ADMIN_ALREADY_REJECTED);
+		}
+		if (this.status != AdminStatus.PENDING) {
+			throw new CustomException(otherwise);
+		}
+
 	}
 }

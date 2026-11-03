@@ -1,0 +1,96 @@
+package com.mz.commerce.common.exception;
+
+import org.springframework.http.HttpStatus;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * API 응답에 사용하는 에러 상태를 도메인별로 정의합니다.
+ *
+ * <p>각 상수는 HTTP 상태, 도메인별 에러코드 문자열, 메시지를 가집니다.
+ * 코드 접두사는 도메인을 나타냅니다. (G: 공통)
+ */
+@Getter
+@RequiredArgsConstructor
+public enum ErrorCode {
+
+	// 공통
+
+	/** JSON 문법 오류, 타입 불일치, Query 누락 */
+	REQUEST_FORMAT_INVALID(HttpStatus.BAD_REQUEST, "G001", "요청 형식이 잘못되었습니다."),
+
+	/** Bean Validation 실패. DTO, QueryParam, PathVariable */
+	REQUEST_VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "G002", "입력값 검증에 실패하였습니다."),
+
+	REQUEST_URL_INVALID(HttpStatus.NOT_FOUND, "G003", "URL 경로가 잘못되었습니다."),
+	REQUEST_METHOD_INVALID(HttpStatus.METHOD_NOT_ALLOWED, "G004", "HTTP 메서드가 잘못되었습니다."),
+	AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "G005", "인증에 실패하였습니다."),
+	SESSION_INVALIDATED(HttpStatus.UNAUTHORIZED, "G006", "세션이 강제 만료되었습니다. 다시 로그인 해주세요."),
+	AUTHORIZED_FORBIDDEN(HttpStatus.FORBIDDEN, "G007", "관리자 인가에 실패하였습니다."),
+	SORT_ORDER_INVALID(HttpStatus.BAD_REQUEST, "G008", "정렬 순서는 asc 또는 desc만 가능합니다."),
+	DB_CONFLICT(HttpStatus.CONFLICT, "G009", "이미 존재하거나 처리할 수 없는 데이터입니다."),
+
+	SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G500", "서버 내부 오류입니다."),
+
+	// 관리자
+	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
+	EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "존재하지 않는 이메일입니다."),
+	INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "A003", "이메일 또는 비밀번호가 일치하지 않습니다."),
+	ADMIN_NOT_ACTIVE(HttpStatus.FORBIDDEN, "A004", "관리자가 '활성' 상태가 아닙니다."),
+	ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "A005", "해당 ID의 관리자를 찾을 수 없습니다."),
+	REJECTION_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "A006", "반려 시에는 사유가 필수입니다."),
+	ADMIN_ALREADY_ACTIVE(HttpStatus.CONFLICT, "A007", "이미 승인된 관리자입니다."),
+	ADMIN_ALREADY_REJECTED(HttpStatus.CONFLICT, "A008", "이미 거부된 관리자입니다."),
+	ADMIN_APPROVAL_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A009", "현재 상태에서는 가입 승인이 불가능합니다."),
+	ADMIN_REJECTION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "A010", "현재 상태에서는 가입 거부가 불가능합니다."),
+	WEAK_PASSWORD(HttpStatus.BAD_REQUEST, "A011", "비밀번호는 최소 8자 이상 입력해야 합니다."),
+	INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "A012", "비밀번호가 일치하지 않습니다"),
+	ADMIN_INACTIVE(HttpStatus.FORBIDDEN, "A013", "관리자가 '비활성' 상태입니다."),
+	ADMIN_REJECTED(HttpStatus.FORBIDDEN, "A014", "관리자가 '거부' 상태입니다."),
+	ADMIN_PENDING(HttpStatus.FORBIDDEN, "A015", "관리자가 '승인 대기' 상태입니다."),
+	ADMIN_SUSPENDED(HttpStatus.FORBIDDEN, "A016", "관리자가 '정지' 상태입니다."),
+	WRONG_ACCESS(HttpStatus.BAD_REQUEST, "A017", "잘못된 접근입니다"),
+	INVALID_PAGE_REQUEST(HttpStatus.BAD_REQUEST, "A018", "페이지와 페이지 크기는 1 이상이어야 합니다."),
+	INVALID_SORT_FIELD(HttpStatus.BAD_REQUEST, "A019", "지원하지 않는 정렬 필드입니다."),
+	INVALID_SORT_ORDER(HttpStatus.BAD_REQUEST, "A020", "정렬 순서는 asc 또는 desc여야 합니다."),
+	INVALID_ADMIN_ROLE(HttpStatus.BAD_REQUEST, "A021", "슈퍼 관리자로는 가입할 수 없습니다."),
+	ADMIN_OPERATION_FORBIDDEN(HttpStatus.FORBIDDEN, "A022", "본인 또는 SUPER 관리자를 대상으로 해당 작업을 수행할 수 없습니다."),
+	SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "A023", "이전에 사용한 비밀번호는 사용할 수 없습니다"),
+
+	// 고객
+	CUSTOMER_STATUS_INVALID(HttpStatus.BAD_REQUEST, "C001", "유효하지 않은 상태입니다. (ACTIVE, INACTIVE, SUSPENDED)"),
+	CUSTOMER_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "C002",
+		"지원하지 않는 정렬 기준입니다. (id, name, email, phone, status, createdAt, modifiedAt)"),
+	CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "C003", "해당 ID의 고객 정보를 찾을 수 없습니다."),
+	CUSTOMER_STATUS_NOT_ORDERABLE(HttpStatus.CONFLICT, "C004", "현재 고객 상태로는 주문할 수 없습니다."),
+	CUSTOMER_DUPLICATE_EMAIL(HttpStatus.CONFLICT, "C005", "이미 사용 중인 이메일입니다."),
+
+	// 상품
+	PRODUCT_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "P001",
+		"상품 카테고리가 올바르지 않습니다. (사용 가능한 카테고리: ELECTRONICS, CLOTHING, FOOD)"),
+	PRODUCT_STATUS_INVALID(HttpStatus.BAD_REQUEST, "P002",
+		"상품 상태가 올바르지 않습니다. (사용 가능한 상태: ON_SALE, SOLD_OUT, DISCONTINUED)"),
+	PRODUCT_SORT_FIELD_INVALID(HttpStatus.BAD_REQUEST, "P003",
+		"지원하지 않는 정렬 기준입니다. (id, name, category, price, stock, status, createdAt, modifiedAt)"),
+	PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "P004", "해당 ID의 상품을 찾을 수 없습니다."),
+	PRODUCT_STATUS_NOT_ORDERABLE(HttpStatus.CONFLICT, "P005", "현재 상품 상태로는 주문할 수 없습니다,"),
+	PRODUCT_OUT_OF_STOCK(HttpStatus.CONFLICT, "P006", "상품 재고가 부족합니다."),
+
+	// 주문
+	ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "O001", "주문을 찾을 수 없습니다."),
+	ORDER_STATUS_NOT_CHANGEABLE(HttpStatus.CONFLICT, "O002", "배송이 완료되거나 취소된 경우 상태를 변경할 수 없습니다."),
+	ORDER_STATUS_NOT_CANCEL(HttpStatus.CONFLICT, "O003", "주문이 준비 중일 경우에만 취소가 가능합니다."),
+
+	//리뷰
+	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "리뷰를 찾을 수 없습니다."),
+	;
+	/** HTTP 응답 상태 코드 */
+	private final HttpStatus status;
+
+	/** 에러 식별 코드. 도메인 접두사 + 번호 (예: G001) */
+	private final String code;
+
+	/** 사용자에게 보여줄 메시지 */
+	private final String message;
+}

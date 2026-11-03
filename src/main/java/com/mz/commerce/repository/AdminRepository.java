@@ -1,0 +1,74 @@
+package com.mz.commerce.repository;
+
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.mz.commerce.dto.admin.AdminResponse;
+import com.mz.commerce.entity.admin.Admin;
+import com.mz.commerce.entity.admin.AdminRole;
+import com.mz.commerce.entity.admin.AdminStatus;
+
+public interface AdminRepository
+	extends JpaRepository<Admin, Long>,
+	JpaSpecificationExecutor<Admin> {
+	Optional<Admin> findByEmail(String email);
+
+	boolean existsByEmail(String email);
+
+	Optional<Admin> findByIdAndDeletedIsNull(Long id);
+
+	/**
+	 * Soft Delete가 안되었으면서 ACTIVE인 해당 ID와 Role을 갖는 관리자를 찾습니다.
+	 *
+	 * <p> {@link com.mz.commerce.common.authentication.AuthenticationInterceptor}에서 세션, DB 불일치를 해소합니다.
+	 */
+	@Query("""
+		SELECT COUNT(a) > 0 FROM Admin a
+		WHERE a.id=:id AND a.role=:role
+		AND a.status=com.mz.commerce.entity.admin.AdminStatus.ACTIVE
+		AND a.deleted IS NULL
+		""")
+	boolean existsActiveByIdAndRole(@Param("id") Long id, @Param("role") AdminRole role);
+
+	@Query("""
+		    SELECT COUNT(a)
+		    FROM Admin a
+		    WHERE a.status = :status
+			AND a.deleted IS NULL
+		""")
+	long countByStatus(@Param("status") AdminStatus status);
+
+	@Query("""
+		SELECT new com.mz.commerce.dto.admin.AdminResponse(
+		    a.id,
+		    a.name,
+		    a.email,
+		    a.phone,
+		    a.status,
+		    a.role,
+		    a.createdAt,
+		    a.approvedAt,
+		    a.rejectedAt,
+		    a.rejectionReason
+		)
+		FROM Admin a
+		WHERE a.deleted IS NULL
+		  AND (:keyword IS NULL OR :keyword = ''
+		       OR LOWER(a.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+		       OR LOWER(a.email) LIKE LOWER(CONCAT('%', :keyword, '%')))
+		  AND (:role IS NULL OR a.role = :role)
+		  AND (:status IS NULL OR a.status = :status)
+		""")
+	Page<AdminResponse> findAdminPageInDto(
+		Pageable pageable,
+		@Param("keyword") String keyword,
+		@Param("role") AdminRole role,
+		@Param("status") AdminStatus status
+	);
+}
